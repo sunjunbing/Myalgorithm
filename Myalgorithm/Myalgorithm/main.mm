@@ -213,6 +213,7 @@ struct BinaryTreeNode{
     int m_nValue;
     BinaryTreeNode *m_pLeft;
     BinaryTreeNode *m_pRight;
+    BinaryTreeNode *m_pParent;
 };
 
 BinaryTreeNode *createBinaryTree(int value){
@@ -284,9 +285,11 @@ void printBinaryTree(BinaryTreeNode *root){
         printf("%d \n", node->m_nValue);
         deque.pop_front();
         if (node->m_pLeft) {
+            node->m_pLeft->m_pParent = node;
             deque.push_back(node->m_pLeft);
         }
         if (node->m_pRight) {
+            node->m_pRight->m_pParent = node;
             deque.push_back(node->m_pRight);
         }
     }
@@ -358,6 +361,36 @@ void printBinaryTreeWithZ(BinaryTreeNode *head){
     }
 }
 
+#pragma mark - 二叉树的下一个节点
+#pragma mark 给定一个二叉树和其中一个节点，请找出中序遍历的下一个节点
+/*
+ 题目解析:
+ 1.节点为根节点，直接返回右节点
+ 2.节点位左节点，直接返回根节点
+ 3.节点位右节点，返回父节点的右节点
+ */
+BinaryTreeNode *getNext(BinaryTreeNode *node){
+    if (node == nil) {
+        return nil;
+    }
+    //右节点
+    if (node->m_pRight) {
+        BinaryTreeNode *next = node->m_pRight;
+        while (next->m_pLeft) {
+            next = next->m_pLeft;
+        }
+        return next;
+    }else if(node->m_pParent != nullptr){//普通节点
+        BinaryTreeNode *current = node;
+        BinaryTreeNode *parent  = node->m_pParent;
+        while (parent != nullptr && current == parent->m_pRight) {
+            current = parent;
+            parent = parent->m_pParent;
+        }
+        return parent;
+    }
+    return nil;
+}
 
 #pragma mark - main
 int main(int argc, const char * argv[]) {
@@ -403,6 +436,14 @@ int main(int argc, const char * argv[]) {
         printBinaryTree(root);
         printBinaryTreeLevel(root);
         printBinaryTreeWithZ(root);
+
+        BinaryTreeNode * node = getNext(root);
+        printf("get Next node %d", node->m_nValue);
+        node = getNext(root->m_pLeft->m_pLeft->m_pRight);
+        printf("get Next node %d", node->m_nValue);
+        node = getNext(root->m_pRight->m_pRight);
+        printf("get Next node %d", node?node->m_nValue:0);
     }
+    
     return 0;
 }
