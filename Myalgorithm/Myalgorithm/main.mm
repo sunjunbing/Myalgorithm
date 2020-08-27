@@ -524,7 +524,29 @@ void QuickSort(int *data, int length, int start, int end){
 }
 
 #pragma mark - 旋转数组中最小的数字
-
+#pragma mark {3,4,5,1,2}是{1,2,3,4,5}的旋转
+//输入一个递增数组的旋转，输出数组中最小的元素
+int Min(int *data, int length){
+    if (data == nullptr || length < 0) {
+        [NSException exceptionWithName:@"error" reason:@"Invalid Input" userInfo:nil];
+    }
+    int index1 = 0;
+    int index2 = length - 1;
+    int indexMid = index1;
+    while (data[index1] >= data[index2]) {
+        if (index2 - index1 == 1) {
+            indexMid = index2;
+            break;
+        }
+        indexMid = ceil((float)(index2 - index1)/2)+index1;
+        if (data[index1] <= data[indexMid]) {
+            index1 = indexMid;
+        }else if (data[index2] >= data[indexMid]){
+            index2 = indexMid;
+        }
+    }
+    return data[indexMid];
+}
 
 
 #pragma mark - main
@@ -607,6 +629,10 @@ int main(int argc, const char * argv[]) {
         //二分查找
         int halfData[10] = {1,3,7,9,11,23,44,55,79,88};
         printf("haleData %d \n", halfFind(halfData, 10, 3));
+        
+        //旋转数组
+        int minData[5] = {3,4,5,1,2};
+        printf("rotate data array min %d \n", Min(minData, 5));
     }
     
     return 0;
