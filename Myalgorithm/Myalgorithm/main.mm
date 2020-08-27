@@ -364,26 +364,19 @@ void printBinaryTreeWithZ(BinaryTreeNode *head){
 #pragma mark - 二叉树的下一个节点
 #pragma mark 给定一个二叉树和其中一个节点，请找出中序遍历的下一个节点
 /*
- 题目解析:
- 1.节点为根节点，直接返回右节点
- 2.节点位左节点，直接返回根节点
- 3.节点位右节点，返回父节点的右节点
+ 题目解析:有右子节点和其他节点
  */
 BinaryTreeNode *getNext(BinaryTreeNode *node){
-    if (node == nil) {
-        return nil;
-    }
-    //右节点
-    if (node->m_pRight) {
+    if (node->m_pRight) {//有右子节点
         BinaryTreeNode *next = node->m_pRight;
         while (next->m_pLeft) {
             next = next->m_pLeft;
         }
         return next;
-    }else if(node->m_pParent != nullptr){//普通节点
+    }else if(node->m_pParent != nullptr){//其他节点
         BinaryTreeNode *current = node;
-        BinaryTreeNode *parent  = node->m_pParent;
-        while (parent != nullptr && current == parent->m_pRight) {
+        BinaryTreeNode *parent = node->m_pParent;
+        while (parent && current == parent->m_pRight) {//右子树
             current = parent;
             parent = parent->m_pParent;
         }
@@ -391,6 +384,77 @@ BinaryTreeNode *getNext(BinaryTreeNode *node){
     }
     return nil;
 }
+
+#pragma mark - stack & queue
+//stack: FILO
+//queue: FIFO
+template <typename T> class CQueue{
+public:
+    void appendTail(const T & node);
+    T deleteHead();
+    
+private:
+    std::stack<T> stack1;
+    std::stack<T> stack2;
+};
+
+template <typename T> void CQueue<T>::appendTail(const T & node){
+    stack1.push(node);
+}
+
+template <typename T> T CQueue<T>::deleteHead(){
+    if (stack2.size() <= 0) {
+        while (stack1.size()) {
+            stack2.push(stack1.top());
+            stack1.pop();
+        }
+    }
+    if (stack2.size() == 0) {
+        [NSException exceptionWithName:@"error" reason:@"queue is empty" userInfo:nil];
+    }
+    T head = stack2.top();
+    stack2.pop();
+    return head;
+}
+
+
+#pragma mark - 斐波那契数列
+/*
+       |- 0             (n = 0)
+f(n) = |- 1             (n = 1)
+       |- f(n-1)+f(n-2) (n = 2)
+*/
+#pragma mark 解法一：(会有很多冗余计算)
+long long Fibonacci(unsigned int n){
+    if (n == 0) {
+        return 0;
+    }
+    if (n == 1) {
+        return 1;
+    }
+    return Fibonacci(n-1)+Fibonacci(n-2);
+}
+
+#pragma mark 解法二：(0, 1, 2, ... n);
+long long Fibonacci2(unsigned int n){
+    int res[2] = {0,1};
+    if (n < 2) {
+        return res[n];
+    }
+    int fib0 = 0;
+    int fib1 = 1;
+    int fibN = 0;
+    for(int i = 2; i <= n; i++){
+        fibN = fib0 + fib1;
+        fib0 = fib1;
+        fib1 = fibN;
+    }
+    return fibN;
+}
+
+#pragma mark - 快速排序算法
+
+
 
 #pragma mark - main
 int main(int argc, const char * argv[]) {
@@ -437,12 +501,28 @@ int main(int argc, const char * argv[]) {
         printBinaryTreeLevel(root);
         printBinaryTreeWithZ(root);
 
+        //二叉树的下一个节点
         BinaryTreeNode * node = getNext(root);
-        printf("get Next node %d", node->m_nValue);
+        printf("get Next node %d \n", node->m_nValue);
         node = getNext(root->m_pLeft->m_pLeft->m_pRight);
-        printf("get Next node %d", node->m_nValue);
+        printf("get Next node %d \n", node->m_nValue);
         node = getNext(root->m_pRight->m_pRight);
-        printf("get Next node %d", node?node->m_nValue:0);
+        printf("get Next node %d \n", node?node->m_nValue:0);
+        
+        //双栈实现队列
+        CQueue<char> queue;
+        queue.appendTail('a');
+        queue.appendTail('b');
+        queue.appendTail('c');
+        printf("queue head %c \n", queue.deleteHead());
+        printf("queue head %c \n", queue.deleteHead());
+        printf("queue head %c \n", queue.deleteHead());
+        
+        //求斐波那契数列的第n项
+        double start = CFAbsoluteTimeGetCurrent();
+        printf("Fibonacci %d %lld\n ", 45, Fibonacci2(45));//1134903170
+        double end = CFAbsoluteTimeGetCurrent();
+        printf("cost time %f ms\n", (end - start) * 1000);
     }
     
     return 0;
