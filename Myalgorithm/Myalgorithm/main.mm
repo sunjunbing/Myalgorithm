@@ -209,6 +209,7 @@ void replaceBlank(char string[], int length){
 }
 
 #pragma mark - 二叉树
+#pragma mark 有关二叉搜索树的题目33、36
 struct BinaryTreeNode{
     int m_nValue;
     BinaryTreeNode *m_pLeft;
@@ -452,7 +453,77 @@ long long Fibonacci2(unsigned int n){
     return fibN;
 }
 
+#pragma mark - 查找和排序
+//题型包括：1.旋转数组中最小的数字 2.在排序数组中查找数字
+int halfFind(int *data, int length, int num){
+    if (data == nullptr || length < 0) {
+        [NSException exceptionWithName:@"error" reason:@"Invalid input" userInfo:nil];
+    }
+    int start = 0;
+    int end = length - 1;
+    while (start < end) {
+        int middle = ceil((float)(end - start)/2)+start;
+        if (num > data[middle]) {
+            start = middle;
+        }else if(num < data[middle]){
+            end = middle;
+        }else{
+            return middle;
+        }
+    }
+    return -1;
+}
+
 #pragma mark - 快速排序算法
+int RandomInRange(int start, int end){
+    return rand()%((end+1) - start);
+}
+
+void Swap(int* num1,int* num2){
+    int temp = *num1;
+    *num1 = *num2;
+    *num2 = temp;
+}
+
+int Partition(int *data, int length, int start, int end){
+    if (data == nullptr || length < 0 || start < end) {
+        [NSException exceptionWithName:@"error"
+                                reason:@"input invalid"
+                              userInfo:nil];
+    }
+    
+    int index = RandomInRange(start, end);
+    Swap(&data[index], &data[end]);
+    
+    //这是精髓
+    int small = start - 1;
+    for (index = start; index < end; index++) {
+        if (data[index] < data[end]) {
+            ++small;
+            if (small != index) {
+                Swap(&data[small], &data[index]);
+            }
+        }
+    }
+    ++small;
+    Swap(&data[small], &data[end]);
+    return small;
+}
+
+void QuickSort(int *data, int length, int start, int end){
+    if (data == nullptr || start > end) {
+        return;
+    }
+    int index = Partition(data, length, start, end);
+    if (index > start) {
+        QuickSort(data, length, start, index - 1);
+    }
+    if (index < start) {
+        QuickSort(data, length, index + 1, length);
+    }
+}
+
+#pragma mark - 旋转数组中最小的数字
 
 
 
@@ -523,6 +594,19 @@ int main(int argc, const char * argv[]) {
         printf("Fibonacci %d %lld\n ", 45, Fibonacci2(45));//1134903170
         double end = CFAbsoluteTimeGetCurrent();
         printf("cost time %f ms\n", (end - start) * 1000);
+        
+        //快速排序
+        int quickData[8] = {3,1,2,7,6,5,4,0};
+        QuickSort(quickData, 8, 0, 7);
+        printf("queickData \n");
+        for(int i = 0; i < 8; i++){
+            printf("%d", quickData[i]);
+        }
+        printf("\nqueickData \n");
+        
+        //二分查找
+        int halfData[10] = {1,3,7,9,11,23,44,55,79,88};
+        printf("haleData %d \n", halfFind(halfData, 10, 3));
     }
     
     return 0;
