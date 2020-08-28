@@ -549,6 +549,48 @@ int Min(int *data, int length){
 }
 
 
+#pragma mark - 圆圈中最后剩下的数
+#pragma mark 解法一：
+int lastRemainNum(int *data, int length, int m){
+    if (data == nullptr || length < 0) {
+        [NSException exceptionWithName:@"error" reason:@"Invalid Input" userInfo:nil];
+    }
+    std::vector<int> nums;
+    for(int i = 0; i < length; i++)
+        nums.push_back(data[i]);
+    
+    std::vector<int>::iterator current = nums.begin();
+    while (nums.size() > 1) {
+        for(int j = 1; j < m; j++){
+            current++;
+            if (current == nums.end()) {
+                current = nums.begin();
+            }
+        }
+        std::vector<int>::iterator next = ++current;
+        if (next == nums.end()) {
+            next = nums.begin();
+        }
+        
+        --current;
+        nums.erase(current);
+        current = next;
+    }
+    return *(current);
+}
+
+#pragma mark - 解法二：使用公式计算
+int theLastRemainNum(int n, int m){
+    if (n == 0) {
+        return -1;
+    }
+    if (n == 1) {
+        return n;
+    }
+    return (theLastRemainNum(n-1, m)+m)%n;
+}
+
+
 #pragma mark - main
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
@@ -633,6 +675,11 @@ int main(int argc, const char * argv[]) {
         //旋转数组
         int minData[5] = {3,4,5,1,2};
         printf("rotate data array min %d \n", Min(minData, 5));
+        
+        //圆圈中最后剩下的数
+        int lastRemainData[3] = {1,2,3};
+        printf("lastRemainData is %d \n", lastRemainNum(lastRemainData, 3, 3));
+        printf("the lastRemainData is %d \n", theLastRemainNum(6, 3));
     }
     
     return 0;
