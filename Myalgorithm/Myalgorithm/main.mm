@@ -590,6 +590,112 @@ int theLastRemainNum(int n, int m){
     return (theLastRemainNum(n-1, m)+m)%n;
 }
 
+#pragma mark - 矩阵中的路径
+bool hasPathCore(const char *matrix,
+                 int rows, int row,
+                 int cols, int col,
+                 const char *str, int pathLength,
+                 bool *visit);
+bool hasPath(const char *matrix, int rows, int cols, const char *str){
+    if (matrix == nullptr || rows < 0 || cols < 0 || str == nullptr) {
+        return false;
+    }
+    
+    int pathLength = 0;
+    bool visit[rows * cols];
+    memset(visit, 0, rows * cols);
+    
+    for(int i = 0; i < rows; i++){
+        for(int j = 0; j < cols; j++){
+            if (hasPathCore(matrix,
+                            rows, i,
+                            cols, j,
+                            str, pathLength,
+                            visit)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool hasPathCore(const char *matrix,
+                 int rows, int row,
+                 int cols, int col,
+                 const char *str, int pathLength,
+                 bool *visit){
+    if (str[pathLength] == '\0') {
+        return true;
+    }
+    
+    bool hasPath = false;
+    if (row >= 0 && row < rows &&
+        col >= 0 && col < cols &&
+        matrix[row * cols + col] == str[pathLength] &&
+        !visit[row * cols + col]) {
+        
+        ++pathLength;
+        visit[row * cols + col] = true;
+        
+        hasPath = hasPathCore(matrix, rows, row - 1, cols, col, str, pathLength, visit) ||
+        hasPathCore(matrix, rows, row + 1, cols, col, str, pathLength, visit) ||
+        hasPathCore(matrix, rows, row, cols, col - 1, str, pathLength, visit) ||
+        hasPathCore(matrix, rows, row, cols, col + 1, str, pathLength, visit);
+        
+        if (!hasPath) {
+            --pathLength;
+            visit[row * cols + col] = false;
+        }
+    }
+    return hasPath;
+}
+
+#pragma mark - 机器人的运动范围
+void robbotCore(int rows,int row,
+                int cols,int col,
+                int* count, bool *visit,
+                int threshold);
+int roboot(int m, int n, int threshold){
+    if (m < 0 || n < 0) {
+        return 0;
+    }
+    
+    bool visit[m * n];
+    memset(visit, 0, m * n);
+    
+    int count = 0;
+    robbotCore(m, 0, n, 0, &count, visit, threshold);
+    return count;
+}
+
+int sum(int num){
+    if (num <= 0) {
+        return 0;
+    }
+    int temp = num%10;
+    num = num/10;
+    return sum(num)+temp;
+}
+bool canIn(int row, int col, int threshold){
+    return sum(row) + sum(col) <= threshold;
+}
+void robbotCore(int rows,int row,
+                int cols,int col,
+                int* count, bool *visit,
+                int threshold){
+    //Can in
+    if (row >= 0 && row < rows &&
+        col >= 0 && col < cols &&
+        canIn(row, col, threshold) &&
+        !visit[row * cols + col]) {
+        visit[row * cols + col] = true;
+        (*count)++;
+        robbotCore(rows, row-1, cols, col, count, visit, threshold);
+        robbotCore(rows, row+1, cols, col, count, visit, threshold);
+        robbotCore(rows, row, cols, col-1, count, visit, threshold);
+        robbotCore(rows, row, cols, col+1, count, visit, threshold);
+    }
+}
 
 #pragma mark - main
 int main(int argc, const char * argv[]) {
@@ -680,6 +786,14 @@ int main(int argc, const char * argv[]) {
         int lastRemainData[3] = {1,2,3};
         printf("lastRemainData is %d \n", lastRemainNum(lastRemainData, 3, 3));
         printf("the lastRemainData is %d \n", theLastRemainNum(6, 3));
+        
+        
+        //矩阵中的路径
+        const char* findMatrix = "ABTGCFCSJDEH";
+        const char* str = "BFCEF";
+        printf("hasPath %d \n", hasPath(findMatrix, 3, 4, str));
+        
+        printf("the sum of Robot %d \n", roboot(1, 10, 10));
     }
     
     return 0;
