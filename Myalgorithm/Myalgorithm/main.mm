@@ -590,7 +590,8 @@ int theLastRemainNum(int n, int m){
     return (theLastRemainNum(n-1, m)+m)%n;
 }
 
-#pragma mark - 矩阵中的路径
+#pragma mark - 回溯法
+#pragma mark 矩阵中的路径
 bool hasPathCore(const char *matrix,
                  int rows, int row,
                  int cols, int col,
@@ -650,7 +651,7 @@ bool hasPathCore(const char *matrix,
     return hasPath;
 }
 
-#pragma mark - 机器人的运动范围
+#pragma mark 机器人的运动范围
 void robbotCore(int rows,int row,
                 int cols,int col,
                 int* count, bool *visit,
@@ -695,6 +696,65 @@ void robbotCore(int rows,int row,
         robbotCore(rows, row, cols, col-1, count, visit, threshold);
         robbotCore(rows, row, cols, col+1, count, visit, threshold);
     }
+}
+
+#pragma mark - 动态规划和贪心算法
+#pragma mark 剪绳子，各段绳子乘积的最大值
+#pragma mark 解法一：动态规划
+#pragma mark 题目解析：
+/*
+ f(n) = max(f(i)*f(n-i))
+ */
+int maxProduct(int length){
+    if (length < 2) {
+        return 0;
+    }
+    if (length == 2) {
+        return 1;
+    }
+    if (length == 3) {
+        return 2;
+    }
+    int *products = new int[length+1];
+    products[0] = 0;
+    products[1] = 1;
+    products[2] = 2;
+    products[3] = 3;
+    int max = 0;
+    for(int i = 4; i <= length; ++i){
+        max = 0;
+        for(int j = 1; j <= i/2; ++j){
+            int res = products[j] * products[i - j];
+            if(max < res) max = res;
+        }
+        products[i] = max;
+    }
+    max = products[length];
+    delete [] products;
+    return max;
+}
+
+#pragma mark 解法二：贪心算法
+/*
+ 剪绳子是有规律的，>= 5,要多剪成3的长度的绳子
+ */
+int maxProduct1(int length){
+    if (length < 2) {
+        return 0;
+    }
+    if (length == 2) {
+        return 1;
+    }
+    if (length == 3) {
+        return 2;
+    }
+    int timesOf3 = length/3;
+    if (length - timesOf3 * 3 == 1) timesOf3 -= 1;
+    int timesOf2 = (length - timesOf3 * 3)/2;
+    int num1 = (int)pow(3, timesOf3);
+    int num2 = (int)pow(2, timesOf2);
+    int ret = (int)(num1 * num2);
+    return ret;
 }
 
 #pragma mark - main
@@ -793,7 +853,18 @@ int main(int argc, const char * argv[]) {
         const char* str = "BFCEF";
         printf("hasPath %d \n", hasPath(findMatrix, 3, 4, str));
         
+        //机器人可能走到的格子
         printf("the sum of Robot %d \n", roboot(1, 10, 10));
+        
+        //解绳子
+        double start1 = CFAbsoluteTimeGetCurrent();
+        printf("the max multy %d \n", maxProduct(20));
+        double end1 = CFAbsoluteTimeGetCurrent();
+        printf("cost time %f ms\n", (end1 - start1) * 1000);
+        
+        printf("the max multy %d \n", maxProduct1(20));
+        double end2 = CFAbsoluteTimeGetCurrent();
+        printf("cost time %f ms\n", (end2 - end1) * 1000);
     }
     
     return 0;
