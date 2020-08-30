@@ -701,7 +701,6 @@ void robbotCore(int rows,int row,
 #pragma mark - 动态规划和贪心算法
 #pragma mark 剪绳子，各段绳子乘积的最大值
 #pragma mark 解法一：动态规划
-#pragma mark 题目解析：
 /*
  f(n) = max(f(i)*f(n-i))
  */
@@ -756,6 +755,88 @@ int maxProduct1(int length){
     int ret = (int)(num1 * num2);
     return ret;
 }
+
+#pragma mark - 位运算
+#pragma mark 15 二进制中1的个数
+#pragma mark 解法一：常规解法
+int countOf1_function1(int n){
+    int count = 0;
+    unsigned int flag = 1;
+    while (flag) {
+        if (n & flag)
+            count++;
+        flag = flag << 1;
+    }
+    return count;
+}
+#pragma mark 解法二：
+int countOf1_function2(int n){
+    int count = 0;
+    while (n) {
+        count++;
+        n = (n-1)&n;
+    }
+    return count;
+}
+
+#pragma mark 56 数组中数字出现的次数
+#pragma mark 数组中出现一次的两个数字
+int findTheFirstBitIs1(int num);
+bool isBit1(int num, unsigned int indexOf1);
+void findNumsAppearOnce(int *data, int length, int* num1, int* num2){
+    if (data == nullptr || length < 0) {
+        [NSException exceptionWithName:@"error" reason:@"Invalid Input" userInfo:nil];
+    }
+    int current = 0;
+    for(int i = 0; i < length; ++i){
+        current ^= data[i];
+    }
+    int firtBitIs1 = findTheFirstBitIs1(current);
+    
+    *num1 = *num2 = 0;
+    for(int j = 0; j < length; ++j){
+        if (isBit1(data[j], firtBitIs1)) {
+            int temp = data[j];
+            *num1 ^= temp;
+        }else{
+            int temp = data[j];
+            *num2 ^= temp;
+        }
+    }
+}
+int findTheFirstBitIs1(int num){
+    int index = 0;
+    unsigned int flag = 1;
+    while (flag) {
+        if(num & flag){
+            break;
+        }
+        index++;
+        flag = flag << 1;
+    }
+    return index;
+}
+
+bool isBit1(int num, unsigned int indexOf1){
+    num = num >> indexOf1;
+    return (num&1);
+}
+
+#pragma mark 数组中只出现一个的那个数组
+int findNumAppearOnce(int *data, int length){
+    if (data == nullptr || length < 0) {
+        [NSException exceptionWithName:@"error" reason:@"Invalid Input" userInfo:nil];
+    }
+    int num = data[0];
+    for (int i = 1; i < length; ++i) {
+        num = num^data[i];
+    }
+    return num;
+}
+
+#pragma mark 65 不用加减乘除做加法
+
+
 
 #pragma mark - main
 int main(int argc, const char * argv[]) {
@@ -857,14 +938,34 @@ int main(int argc, const char * argv[]) {
         printf("the sum of Robot %d \n", roboot(1, 10, 10));
         
         //解绳子
-        double start1 = CFAbsoluteTimeGetCurrent();
+        double start_1 = CFAbsoluteTimeGetCurrent();
         printf("the max multy %d \n", maxProduct(20));
-        double end1 = CFAbsoluteTimeGetCurrent();
-        printf("cost time %f ms\n", (end1 - start1) * 1000);
+        double end1_1 = CFAbsoluteTimeGetCurrent();
+        printf("cost time %f ms\n", (end1_1 - start_1) * 1000);
         
         printf("the max multy %d \n", maxProduct1(20));
-        double end2 = CFAbsoluteTimeGetCurrent();
-        printf("cost time %f ms\n", (end2 - end1) * 1000);
+        double end2_1 = CFAbsoluteTimeGetCurrent();
+        printf("cost time %f ms\n", (end2_1 - end1_1) * 1000);
+        
+        //the number of 1
+        double start_2 = CFAbsoluteTimeGetCurrent();
+        printf("the number of 1 %d \n", countOf1_function1(999999999));
+        double end_2 = CFAbsoluteTimeGetCurrent();
+        printf("cost time %f ms\n", (end_2 - start_2) * 1000);
+        printf("the number of 1 %d \n", countOf1_function2(999999999));
+        double end_3 = CFAbsoluteTimeGetCurrent();
+        printf("cost time %f ms\n", (end_3 - end_2) * 1000);
+        
+        //find the number apper once
+        int appearOnceData[7] = {1,1,2,2,4,5,5};
+        printf("find the number appear once %d \n", findNumAppearOnce(appearOnceData, 7));
+        
+        //find the nums appear once
+        int appearNumsAppearOnce[6] = {4, 6, 1, 1, 1, 1};
+        int num1 = 0;
+        int num2 = 0;
+        findNumsAppearOnce(appearNumsAppearOnce, 6, &num1, &num2);
+        printf("appearNumsAppearOnce %d %d \n", num1, num2);
     }
     
     return 0;
