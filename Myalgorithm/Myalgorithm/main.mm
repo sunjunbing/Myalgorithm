@@ -850,7 +850,7 @@ bool isBit1(int num, unsigned int indexOf1){
     return (num&1);
 }
 
-#pragma mark 数组中只出现一个的那个数组
+#pragma mark 数组中只出现一次的那个数字
 int findNumAppearOnce(int *data, int length){
     if (data == nullptr || length < 0) {
         [NSException exceptionWithName:@"error" reason:@"Invalid Input" userInfo:nil];
@@ -875,6 +875,22 @@ int Add(int num1, int num2){
         num2 = carry;
     }while(num2 != 0);
     return num1;
+}
+
+#pragma mark - 数据的整数次方
+double MyPower(double base, int expense){
+    if (base == 0) {
+        return 0;
+    }
+    if (expense == 0) {
+        return 1;
+    }
+    double result = MyPower(base, expense>>1);
+    result *= result;
+    if ((expense&1) == 1) {
+        result *= base;
+    }
+    return result;
 }
 
 
@@ -1015,6 +1031,9 @@ int main(int argc, const char * argv[]) {
         
         //不用加减乘除做加法
         printf("Add %d \n", Add(8, 9));
+        
+        //数据的整数次方
+        printf("MyPower %f \n", MyPower(9, 3));
     }
     
     return 0;
