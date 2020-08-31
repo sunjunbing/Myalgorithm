@@ -893,6 +893,69 @@ double MyPower(double base, int expense){
     return result;
 }
 
+#pragma mark - 打印从1到最大的n位数
+#pragma mark 常规解法
+void print1ToMaxOfNDigits(int n){
+    for(int i = 1; i <= pow(10, n) - 1; ++i){
+        printf("%d ", (int)i);
+    }
+    printf("\n");
+}
+#pragma mark 大数问题，用字符出啊解决
+/*
+ 1.两数之和
+ 2.字符串表达数字
+ */
+bool Increment(char *number);
+void PrintNumeber(char *number);
+void print1ToMaxOfNDigits1(int n){
+    if (n < 0) {
+        return;
+    }
+    char *number = new char[n+1];
+    memset(number, '0', n+1);
+    number[n] = '\0';
+    while(!Increment(number)) {
+        PrintNumeber(number);
+    }
+}
+//++1看是否溢出
+bool Increment(char *number){
+    bool isOverFlow = false;
+    int nTakeOver = 0;
+    int length = (int)strlen(number);
+    for(int i = length-1; i >= 0; --i){
+        int sum = number[i] - '0' + nTakeOver;
+        if(i == length - 1) sum++;
+        if (sum >= 10) {
+            if (i == 0) {
+                isOverFlow = true;
+            }
+            sum -= 10;
+            nTakeOver = 1;
+            number[i] = '0' + sum;
+        }else{
+            number[i] = '0' + sum;
+            break;
+        }
+    }
+    return isOverFlow;
+}
+
+void PrintNumeber(char *number){
+    bool bBeginning = true;
+    int length = (int)strlen(number);
+    for(int i = 0; i < length; ++i){
+        if (bBeginning && number[i] != '0') {
+            bBeginning = false;
+        }
+        if (!bBeginning) {
+            printf("%c", number[i]);
+        }
+    }
+    printf("\t");
+}
+
 
 #pragma mark - main
 int main(int argc, const char * argv[]) {
@@ -1034,6 +1097,10 @@ int main(int argc, const char * argv[]) {
         
         //数据的整数次方
         printf("MyPower %f \n", MyPower(9, 3));
+        
+        //打印从1到最大的n位数
+        print1ToMaxOfNDigits(3);
+        print1ToMaxOfNDigits1(3);
     }
     
     return 0;
