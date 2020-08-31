@@ -16,6 +16,7 @@
 #include <list>
 #include <map>
 #include <stack>
+#include <exception>
 
 #pragma mark - 数组中重复出现的数字
 //题目描述：在一个长度为n的数组里所有的数字都在0～n-1的范围内，数组中默写数字是重复的，但是不知道有几个重复，也不知道每个数字重复了几次，请找出数组中任意一个重复的数字
@@ -63,6 +64,33 @@ bool duplicate(int* number, int length, int* duplicate){
     }
     return false;
 }
+
+int findNumAppearMoreThanOnce(int *data, int length){
+    if (data == nullptr || length < 0) {
+        return -1;
+    }
+    for(int i = 0; i < length; i++){
+        if (i != (data[i] - 1)) {
+            while (data[i] == data[data[i] - 1]) {
+                return data[i];
+            }
+            std::swap(data[i] , data[data[i] - 1]);
+        }
+    }
+    return 0;
+}
+
+void QuickSort(int *data, int length, int start, int end);
+int findNumAppearMoreThanOnce1(int *data, int length){
+    QuickSort(data, length, 0, length - 1);
+    for(int i = 1; i < length; i++){
+        if (data[i] == data[i - 1]) {
+            return data[i];
+        }
+    }
+    return 0;
+}
+
 //题目描述：不修改数组找出重复的数字
 //题目解析：利用出现的次数是否超出一半
 int countRange(int *data, int length, int start, int end){
@@ -519,7 +547,7 @@ void QuickSort(int *data, int length, int start, int end){
         QuickSort(data, length, start, index - 1);
     }
     if (index < start) {
-        QuickSort(data, length, index + 1, length);
+        QuickSort(data, length, index + 1, end);
     }
 }
 
@@ -835,7 +863,19 @@ int findNumAppearOnce(int *data, int length){
 }
 
 #pragma mark 65 不用加减乘除做加法
-
+int Add(int num1, int num2){
+    int sum = 0;
+    int carry = 0;
+    do{
+        //0010 ^ 0100 = 0110
+        sum = num1 ^ num2;
+        //0010 & 0010 = 0010 << 1 = 0100
+        carry = (num1 & num2) << 1;
+        num1 = sum;
+        num2 = carry;
+    }while(num2 != 0);
+    return num1;
+}
 
 
 #pragma mark - main
@@ -857,6 +897,12 @@ int main(int argc, const char * argv[]) {
         }
         //数组中出现多次的数字：解法三
         NSLog(@"duplicate numern function 3 %d", duplicate2(data, 6));
+        
+        //正整数数组中，重复出现的数字
+        int dataDuplicate[8] = {2,3,4,5,2,6,7,8};
+        int temp = findNumAppearMoreThanOnce(dataDuplicate, 8);
+        printf("duplicate numern function 4 %d\n", temp);
+        printf("duplicate number funcinot 4 %d\n", findNumAppearMoreThanOnce1(dataDuplicate, 8));
         
         //二维数组中查找数字
         int matrix[][4] = {{1,2,8,9},{2,4,9,12},{4,7,10,13},{6,8,11,15}};
@@ -966,6 +1012,9 @@ int main(int argc, const char * argv[]) {
         int num2 = 0;
         findNumsAppearOnce(appearNumsAppearOnce, 6, &num1, &num2);
         printf("appearNumsAppearOnce %d %d \n", num1, num2);
+        
+        //不用加减乘除做加法
+        printf("Add %d \n", Add(8, 9));
     }
     
     return 0;
