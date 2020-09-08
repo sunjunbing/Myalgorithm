@@ -17,6 +17,7 @@
 #include <map>
 #include <stack>
 #include <exception>
+#include <string>
 
 #pragma mark - 数组中重复出现的数字
 //题目描述：在一个长度为n的数组里所有的数字都在0～n-1的范围内，数组中默写数字是重复的，但是不知道有几个重复，也不知道每个数字重复了几次，请找出数组中任意一个重复的数字
@@ -156,54 +157,6 @@ bool findNumInMatrix(int *matrix, int rows, int colums, int num){
     return false;
 }
 
-#pragma mark - 从尾到头打印列表
-struct ListNode{
-    int value;
-    ListNode *next;
-};
-
-void connectList(ListNode *head, ListNode *node){
-    if (head && node) {
-        head->next = node;
-    }
-}
-
-ListNode *createListWithNumber(int number){
-    ListNode *head = new ListNode();
-    head->value = 0;
-    ListNode *current = head;
-    for(int i = 1; i < number; i++){
-        ListNode *node = new ListNode();
-        node->value = i;
-        connectList(current, node);
-        current = node;
-    }
-    return head;
-}
-
-#pragma mark 方法一：入栈再出栈
-void printListFromTrail(ListNode *listNode){
-    std::stack<ListNode *> stack;
-    while (listNode) {
-        stack.push(listNode);
-        listNode = listNode->next;
-    }
-    while (stack.size()>0){
-        printf("%d \n", stack.top()->value);
-        stack.pop();
-    }
-}
-#pragma mark 方法二：递归（递归的本质就是栈）
-void printListFromTrail_1(ListNode *listNode){
-    if (listNode == nullptr) {
-        return;
-    }
-    if(listNode->next) {
-        printListFromTrail_1(listNode->next);
-    }
-    printf("%d \n", listNode->value);
-}
-
 #pragma mark - 空格替换
 void replaceBlank(char string[], int length){
     //1.计算所有空格的个数
@@ -260,7 +213,7 @@ void connectBinaryTree(BinaryTreeNode *root, BinaryTreeNode *left, BinaryTreeNod
 }
 BinaryTreeNode* ConstructCore(int* startPreorder, int* endPreorder, int* startInorder, int* endInorder);
 
-#pragma mark - 重建二叉树，通过给定的前序遍历序列和中序遍历序列，重建二叉树，并输出根节点
+#pragma mark 重建二叉树，通过给定的前序遍历序列和中序遍历序列，重建二叉树，并输出根节点
 //1.根据前序遍历序列，获得根节点
 //2.获得 子序列
 BinaryTreeNode *ConstructCore(int *startPreOrder, int *EndPreorder,
@@ -272,7 +225,7 @@ BinaryTreeNode *Construct(int *PreOrder, int *InOrder, int length){
     }
     return ConstructCore(PreOrder, PreOrder+length-1, InOrder, InOrder+length-1);
 }
-
+    
 //递归调用
 BinaryTreeNode *ConstructCore(int *startPreOrder, int *EndPreorder,
                               int *startInOrder,  int *EndInOrder){
@@ -305,7 +258,7 @@ BinaryTreeNode *ConstructCore(int *startPreOrder, int *EndPreorder,
     return root;
 }
 
-#pragma mark - 不分行打印二叉树
+#pragma mark 不分行打印二叉树
 void printBinaryTree(BinaryTreeNode *root){
     std::deque<BinaryTreeNode *> deque;
     deque.push_back(root);
@@ -324,7 +277,7 @@ void printBinaryTree(BinaryTreeNode *root){
     }
 }
 
-#pragma mark - 分行打印二叉树(双向队列)
+#pragma mark 分行打印二叉树(双向队列)
 void printBinaryTreeLevel(BinaryTreeNode *root){
     std::deque<BinaryTreeNode *> deque;
     deque.push_back(root);
@@ -351,7 +304,7 @@ void printBinaryTreeLevel(BinaryTreeNode *root){
     }
 }
 
-#pragma mark - 之字形打印二叉树(双栈)
+#pragma mark 之字形打印二叉树(双栈)
 void printBinaryTreeWithZ(BinaryTreeNode *head){
     if (head == nullptr) {
         return;
@@ -390,7 +343,7 @@ void printBinaryTreeWithZ(BinaryTreeNode *head){
     }
 }
 
-#pragma mark - 二叉树的下一个节点
+#pragma mark 二叉树的下一个节点
 #pragma mark 给定一个二叉树和其中一个节点，请找出中序遍历的下一个节点
 /*
  题目解析:有右子节点和其他节点
@@ -546,7 +499,7 @@ void QuickSort(int *data, int length, int start, int end){
     if (index > start) {
         QuickSort(data, length, start, index - 1);
     }
-    if (index < start) {
+    if (index < end) {
         QuickSort(data, length, index + 1, end);
     }
 }
@@ -607,7 +560,7 @@ int lastRemainNum(int *data, int length, int m){
     return *(current);
 }
 
-#pragma mark - 解法二：使用公式计算
+#pragma mark 解法二：使用公式计算
 int theLastRemainNum(int n, int m){
     if (n == 0) {
         return -1;
@@ -877,7 +830,7 @@ int Add(int num1, int num2){
     return num1;
 }
 
-#pragma mark - 数据的整数次方
+#pragma mark - 16 数据的整数次方
 double MyPower(double base, int expense){
     if (base == 0) {
         return 0;
@@ -893,15 +846,197 @@ double MyPower(double base, int expense){
     return result;
 }
 
-#pragma mark - 打印从1到最大的n位数
-#pragma mark 常规解法
+#pragma mark - 列表相关操作
+#pragma mark 从尾到头打印列表
+struct ListNode{
+    int value;
+    ListNode *next;
+};
+
+void connectList(ListNode *head, ListNode *node){
+    if (head && node) {
+        head->next = node;
+    }
+}
+
+ListNode *createListWithNumber(int number){
+    ListNode *head = new ListNode();
+    head->value = 0;
+    ListNode *current = head;
+    for(int i = 1; i < number; i++){
+        ListNode *node = new ListNode();
+        node->value = i;
+        connectList(current, node);
+        current = node;
+    }
+    return head;
+}
+
+#pragma mark 方法一：入栈再出栈
+void printListFromTrail(ListNode *listNode){
+    std::stack<ListNode *> stack;
+    while (listNode) {
+        stack.push(listNode);
+        listNode = listNode->next;
+    }
+    while (stack.size()>0){
+        printf("%d \n", stack.top()->value);
+        stack.pop();
+    }
+}
+#pragma mark 方法二：递归（递归的本质就是栈）
+void printListFromTrail_1(ListNode *listNode){
+    if (listNode == nullptr) {
+        return;
+    }
+    if(listNode->next) {
+        printListFromTrail_1(listNode->next);
+    }
+    printf("%d \n", listNode->value);
+}
+#pragma mark 22 列表中倒数第k个节点
+#pragma mark 倒数的第k个节点 = 正数的第(n-k+1)个节点
+ListNode *FindKthToTail(ListNode *head, int k){
+    if (head == nullptr || k==0) {
+        return nullptr;
+    }
+    ListNode *p1 = head;
+    ListNode *p2 = nullptr;
+    for(int i = 0; i < k-1; ++i){
+        if (p1->next==nullptr) {
+            return nullptr;
+        }
+        p1 = p1->next;
+    }
+    p2 = head;
+    while (p1->next!=nullptr) {
+        p1=p1->next;
+        p2=p2->next;
+    }
+    return p2;
+}
+
+#pragma mark 列表的中间节点(快慢指针)
+ListNode *middleOfList(ListNode *head){
+    if (head       == nullptr ||//空列表
+        head->next == nullptr) {//只有一个节点的列表
+        return nullptr;
+    }
+    ListNode *fast = head;
+    ListNode *slow = head;
+    while (fast&&fast->next != nullptr) {
+        fast = (fast&&fast->next)?fast->next:nullptr;
+        fast = (fast&&fast->next)?fast->next:nullptr;
+        slow = (slow&&slow->next)?slow->next:nullptr;
+    }
+    return slow;
+}
+
+#pragma mark 23 列表中环的入口(快慢指针)
+
+#pragma mark 24 反转列表
+
+#pragma mark 25 合并两个有序列表
+
+#pragma mark 18 删除列表的节点
+#pragma mark 题目一：在O(1)时间内删除链表的节点
+#pragma mark 题目解析
+ListNode * createNode(int value);
+ListNode * connectNode(ListNode *head, ListNode *currentNode);
+/*
+ 要删除节点i，那么把节点j的内容复制到节点i中，然手删除节点j就OK
+ */
+void deleteNode(ListNode** pListHead, ListNode* pToBeDeleted)
+{
+    if(!pListHead || !pToBeDeleted)
+        return;
+
+    if(pToBeDeleted->next != nullptr)
+    {
+        ListNode* pNext = pToBeDeleted->next;
+        pToBeDeleted->value = pNext->value;
+        pToBeDeleted->next = pNext->next;
+ 
+        delete pNext;
+        pNext = nullptr;
+    }else if(*pListHead == pToBeDeleted){
+        delete pToBeDeleted;
+        pToBeDeleted = nullptr;
+        *pListHead = nullptr;
+    }
+    else{
+        ListNode* pNode = *pListHead;
+        while(pNode->next != pToBeDeleted)
+        {
+            pNode = pNode->next;
+        }
+ 
+        pNode->next = nullptr;
+        delete pToBeDeleted;
+        pToBeDeleted = nullptr;
+    }
+}
+
+#pragma mark 删除链表中重复的节点
+void deleteDeplication(ListNode **head){
+    if (*head == nullptr) {
+        return;
+    }
+    ListNode *pPreNode = nullptr;
+    ListNode *node = *head;
+    while (node != nullptr) {
+        ListNode *pNext = node->next;
+        bool bDelte = false;
+        if (pNext != nullptr && node->value == pNext->value) {
+            bDelte = true;
+        }
+        if (!bDelte) {
+            pPreNode = node;
+            node = pNext;
+        }else{
+            int value = node->value;
+            ListNode *bDelNode = node;
+            while (bDelNode != nullptr && bDelNode->value == value) {
+                pNext = bDelNode->next;
+                delete bDelNode;
+                bDelNode = nullptr;
+                bDelNode = pNext;
+            }
+            //重新链接List
+            if (pPreNode == nullptr) {
+                *head = pNext;
+            }else{
+                pPreNode->next = pNext;
+            }
+            node = pNext;
+        }
+    }
+}
+
+ListNode * createNode(int value){
+    ListNode *node = new ListNode();
+    node->value = value;
+    node->next = NULL;
+    return node;
+}
+ListNode * connectNode(ListNode *head, ListNode *currentNode){
+    if (head == nullptr || currentNode == nullptr) {
+        return nullptr;
+    }
+    head->next = currentNode;
+    return head;
+}
+
+#pragma mark - 字符串操作
+#pragma mark 17 打印从1到最大的n位数
+#pragma mark 解法一：常规解法
 void print1ToMaxOfNDigits(int n){
     for(int i = 1; i <= pow(10, n) - 1; ++i){
         printf("%d ", (int)i);
     }
     printf("\n");
 }
-#pragma mark 大数问题，用字符出啊解决
+#pragma mark 解法二：大数问题，用字符出啊解决
 /*
  1.两数之和
  2.字符串表达数字
@@ -919,7 +1054,7 @@ void print1ToMaxOfNDigits1(int n){
         PrintNumeber(number);
     }
 }
-//++1看是否溢出
+
 bool Increment(char *number){
     bool isOverFlow = false;
     int nTakeOver = 0;
@@ -956,7 +1091,167 @@ void PrintNumeber(char *number){
     printf("\t");
 }
 
+#pragma mark 解法三：递归解决
+void print1ToMaxOfNDigits2Core(char *number, int length, int index){
+    if (index == length-1) {
+        PrintNumeber(number);
+        return;
+    }
+    for(int i = 0; i < 10; i++){
+        number[index+1] = i + '0';
+        print1ToMaxOfNDigits2Core(number, length, index+1);
+    }
+}
+void print1ToMaxOfNDigits2(int n){
+    if (n < 0) {
+        return;
+    }
+    char *number = new char[n+1];
+    memset(number, '0', n+1);
+    number[n] = '\0';
+    for(int i = 0; i < 10; ++i){
+        number[0] = i + '0';
+        print1ToMaxOfNDigits2Core(number, n, 0);
+    }
+    delete [] number;
+}
 
+#pragma mark 19 正则表达式匹配
+#pragma mark 题目描述：换一种思考方式，这也是在提醒你，你现在在动脑子
+/*
+ 请实现一个函数用来匹配用来匹配包含"."和"*"的正则表达式。
+ 模式中的"."表示任意一个字符，
+ 而"*"表示他前面的字符可以出现任意次(含0次)，
+ 在本题中，匹配是指字符串的所有字符匹配整个模式。
+ 例如，字符串"aaa"与模式“a.a”和"ab*ac*a"匹配，
+ 但与“aa.a”和"ab*a"都不匹配
+ */
+#pragma mark  题目解析
+/*
+ 1.compare 相同比较下一位 不同看pattent的下一位的情况
+ */
+bool matchCore(const char *str, const char *pattern);
+bool match(const char *str, const char *pattern){
+    if (str == nullptr || pattern == nullptr) {
+        return false;
+    }
+    return matchCore(str, pattern);
+}
+bool matchCore(const char *str, const char *pattern){
+    if (*str == '\0' && *pattern == '\0') {
+        return true;
+    }
+    if (*str != '\0' && *pattern == '\0') {
+        return false;
+    }
+    if (*(pattern+1) == '*') {
+        if (*pattern == *str || (*pattern == '.'&&*str != '\0')) {
+            return matchCore(str, pattern+2) ||
+            matchCore(str+1, pattern) ||
+            matchCore(str+1, pattern+2);
+        }else{
+           return matchCore(str, pattern+2);
+        }
+    }
+    if ((*str != '\0' && *pattern == '.') || *str == *pattern) {
+        return matchCore(str+1, pattern+1);
+    }
+    return false;
+}
+
+void Test(const char *method,const char *src,const char *dest, bool m){
+    printf("%s %s match %s \n", src, match(src, dest)?"":"not", dest);
+}
+
+#pragma mark 20 判断一个字符串是否可以表示有效数字
+/*
+ 如果一个字符串表达的事有效的数据，那么他应该遵守如下模式
+ A[.[B]][e|EC]
+ A:表示整数部分(+/-)(0~9)
+ B:表示小数部分(0~9)
+ C:表示指数部分(+/-)(0~9)
+ */
+//注意只有地址是可以++/--计算的
+bool scanNumeric(const char **str);
+bool scanUnsignedNumeric(const char **str);
+bool isNumeric(const char *str){
+    //str指向字符串第一个字符的地址
+    if (str == nullptr) {
+        return false;
+    }
+    bool numeric = scanNumeric(&str);//整数部分
+    if (*str == '.') {//小数部分
+        ++str;
+        numeric = scanUnsignedNumeric(&str) || numeric;
+    }
+    if (*str == 'e' || *str == 'E') {//指数部分
+        ++str;
+        numeric = scanNumeric(&str) && numeric;
+    }
+    return numeric && *str == '\0';
+}
+
+//**str表示子字符串
+bool scanNumeric(const char **str){
+    if (**str == '+' || **str == '-') {
+        ++(*str);
+    }
+    return scanUnsignedNumeric(str);
+}
+
+bool scanUnsignedNumeric(const char **str){
+    const char *before = *str;
+    while (**str != '\0' && **str >= '0' && **str <= '9') {
+        ++(*str);
+    }
+    return *str > before;
+}
+
+void isNumericTest(const char *name, char *str, bool expected){
+    printf("%s %s Numeric \n", str, isNumeric(str)?"is":"is not");
+}
+
+#pragma mark - 21 调整数组使奇数位于偶数前面
+#pragma mark 时间复杂度O(n)，空间复杂度O(1)
+bool isOdd(int *data, unsigned int length, int index);
+void ReorderOddEvent(int *data, unsigned int length){
+    if (data == nullptr || length < 0) {
+        return;
+    }
+    int front = 0;
+    int back  = length - 1;
+    while (front < back) {
+        
+        while (front < back && !isOdd(data, length, front)){
+            front++;
+        }
+        while (front < back && isOdd(data, length, back)){
+            back--;
+        }
+        if (front < back){
+            Swap(&data[front], &data[back]);
+        }
+    }
+}
+
+bool isOdd(int *data, unsigned int length, int index){
+    return (data[index]%2) == 0;
+}
+
+void printArray(int *data, int length){
+    for(int i = 0; i < length; ++i)
+        printf("%d", data[i]);
+    printf("\n");
+}
+void ReorderOddEventTest(int *data, int length){
+    ReorderOddEvent(data, length);
+    printArray(data, length);
+}
+
+
+#pragma mark - Test
+void FindKthToTailTest();
+void middleOfListTest();
 #pragma mark - main
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
@@ -1101,7 +1396,163 @@ int main(int argc, const char * argv[]) {
         //打印从1到最大的n位数
         print1ToMaxOfNDigits(3);
         print1ToMaxOfNDigits1(3);
+        print1ToMaxOfNDigits2(3);
+        printf("\n");
+        
+        //delete Node
+        ListNode *head_1 = createNode(1);
+        ListNode *node1 = createNode(2);
+        ListNode *node2 = createNode(3);
+        ListNode *node3 = createNode(4);
+        
+        connectList(head_1, node1);
+        connectList(node1, node2);
+        connectList(node2, node3);
+        
+//        deleteNode(&head_1, head_1);
+        deleteNode(&head_1, node2);
+//        deleteNode(&head_1, node3);
+        
+        ListNode *head_2 = createNode(1);
+        ListNode *node2_1 = createNode(2);
+        ListNode *node2_2 = createNode(2);
+        ListNode *node2_3 = createNode(3);
+        ListNode *node2_4 = createNode(4);
+        ListNode *node2_5 = createNode(4);
+        ListNode *node2_6 = createNode(5);
+        
+        connectList(head_2, node2_1);
+        connectList(node2_1, node2_2);
+        connectList(node2_2, node2_3);
+        connectList(node2_3, node2_4);
+        connectList(node2_4, node2_5);
+        connectList(node2_5, node2_6);
+        
+        deleteDeplication(&head_2);
+        ListNode *current = head_2;
+        while (current) {
+            printf("%d ", current->value);
+            current = current->next;
+        }
+        
+        char matchStr[]    = "aaa";
+        char patternStr1[] = "aa*a";
+        char patternStr2[] = "a.a";
+        char patternStr3[] = "ab*ab*a";
+        printf("pattentStr1 match %d \n",match(matchStr, patternStr1));
+        printf("pattentStr1 match %d \n",match(matchStr, patternStr2));
+        printf("pattentStr1 match %d \n",match(matchStr, patternStr3));
+        
+        //正则表达式
+        Test("Test01", "", "", true);
+        Test("Test02", "", ".*", true);
+        Test("Test03", "", ".", false);
+        Test("Test04", "", "c*", true);
+        Test("Test05", "a", ".*", true);
+        Test("Test06", "a", "a.", false);
+        Test("Test07", "a", "", false);
+        Test("Test08", "a", ".", true);
+        Test("Test09", "a", "ab*", true);
+        Test("Test10", "a", "ab*a", false);
+        Test("Test11", "aa", "aa", true);
+        Test("Test12", "aa", "a*", true);
+        Test("Test13", "aa", ".*", true);
+        Test("Test14", "aa", ".", false);
+        Test("Test15", "ab", ".*", true);
+        Test("Test16", "ab", ".*", true);
+        Test("Test17", "aaa", "aa*", true);
+        Test("Test18", "aaa", "aa.a", false);
+        Test("Test19", "aaa", "a.a", true);
+        Test("Test20", "aaa", ".a", false);
+        Test("Test21", "aaa", "a*a", true);
+        Test("Test22", "aaa", "ab*a", false);
+        Test("Test23", "aaa", "ab*ac*a", true);
+        Test("Test24", "aaa", "ab*a*c*a", true);
+        Test("Test25", "aaa", ".*", true);
+        Test("Test26", "aab", "c*a*b", true);
+        Test("Test27", "aaca", "ab*a*c*a", true);
+        Test("Test28", "aaba", "ab*a*c*a", false);
+        Test("Test29", "bbbba", ".*a*a", true);
+        Test("Test30", "bcbbabab", ".*a*a", false);
+        
+        //有效数字
+        isNumericTest("Test1", "100", true);
+        isNumericTest("Test2", "123.45e+6", true);
+        isNumericTest("Test3", "+500", true);
+        isNumericTest("Test4", "5e2", true);
+        isNumericTest("Test5", "3.1416", true);
+        isNumericTest("Test6", "600.", true);
+        isNumericTest("Test7", "-.123", true);
+        isNumericTest("Test8", "-1E-16", true);
+        isNumericTest("Test9", "1.79769313486232E+308", true);
+        isNumericTest("Test10", "12e", false);
+        isNumericTest("Test11", "1a3.14", false);
+        isNumericTest("Test12", "1+23", false);
+        isNumericTest("Test13", "1.2.3", false);
+        isNumericTest("Test14", "+-5", false);
+        isNumericTest("Test15", "12e+5.4", false);
+        isNumericTest("Test16", ".", false);
+        isNumericTest("Test17", ".e1", false);
+        isNumericTest("Test18", "e1", false);
+        isNumericTest("Test19", "+.", false);
+        isNumericTest("Test20", "", false);
+        isNumericTest("Test21", nullptr, false);
+        
+        int numbers1[] = {1, 2, 3, 4, 5, 6, 7};
+        int numbers2[] = {2, 4, 6, 1, 3, 5, 7};
+        int numbers3[] = {1, 3, 5, 7, 2, 4, 6};
+        int numbers4[] = {1};
+        int numbers5[] = {2};
+        ReorderOddEventTest(numbers1,7);
+        ReorderOddEventTest(numbers2,7);
+        ReorderOddEventTest(numbers3,7);
+        ReorderOddEventTest(numbers4,1);
+        ReorderOddEventTest(numbers5,1);
+        
+        
+        FindKthToTailTest();
+        middleOfListTest();
     }
     
     return 0;
+}
+
+void FindKthToTailTest(){
+    ListNode* pNode1 = createNode(1);
+    ListNode* pNode2 = createNode(2);
+    ListNode* pNode3 = createNode(3);
+    ListNode* pNode4 = createNode(4);
+    ListNode* pNode5 = createNode(5);
+
+    connectList(pNode1, pNode2);
+    connectList(pNode2, pNode3);
+    connectList(pNode3, pNode4);
+    connectList(pNode4, pNode5);
+    
+    ListNode *pNode = FindKthToTail(pNode1, 1);
+    printf("pNode %d \n", pNode->value);
+    ListNode *pNode_1 = FindKthToTail(pNode1, 5);
+    printf("pNode %d \n", pNode_1->value);
+    ListNode *pNode_2 = FindKthToTail(pNode1, 100);
+    printf("pNode %d \n", pNode_2?pNode_2->value:-1);
+    ListNode *pNode_3 = FindKthToTail(pNode1, 0);
+    printf("pNode %d \n", pNode_3?pNode_3->value:-1);
+}
+
+void middleOfListTest(){
+    ListNode* pNode1 = createNode(1);
+    ListNode* pNode2 = createNode(2);
+    ListNode* pNode3 = createNode(3);
+    ListNode* pNode4 = createNode(4);
+    ListNode* pNode5 = createNode(5);
+    ListNode* pNode6 = createNode(6);
+
+    connectList(pNode1, pNode2);
+    connectList(pNode2, pNode3);
+    connectList(pNode3, pNode4);
+    connectList(pNode4, pNode5);
+    connectList(pNode5, pNode6);
+
+    ListNode *node_1 = middleOfList(pNode1);
+    printf("pNode %d \n", node_1?node_1->value:-1);
 }
