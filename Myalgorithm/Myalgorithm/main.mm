@@ -190,7 +190,7 @@ void replaceBlank(char string[], int length){
 }
 
 #pragma mark - 二叉树
-#pragma mark 有关二叉搜索树的题目33、36
+#pragma mark 有关二叉搜索树的题目26、27、28、32、33、36、37
 struct BinaryTreeNode{
     int m_nValue;
     BinaryTreeNode *m_pLeft;
@@ -258,7 +258,7 @@ BinaryTreeNode *ConstructCore(int *startPreOrder, int *EndPreorder,
     return root;
 }
 
-#pragma mark 不分行打印二叉树
+#pragma mark 32 不分行打印二叉树
 void printBinaryTree(BinaryTreeNode *root){
     std::deque<BinaryTreeNode *> deque;
     deque.push_back(root);
@@ -365,6 +365,128 @@ BinaryTreeNode *getNext(BinaryTreeNode *node){
         return parent;
     }
     return nil;
+}
+
+#pragma mark 26 树的子结构
+/*
+ 题目描述：给两棵树A、B，判断B是否是A的子树
+ 题目解析：通过两棵的遍历来判断
+ */
+void HasSubTreeCore(BinaryTreeNode *A, BinaryTreeNode *B, bool *bSubTree);
+void HasSubTreeCore1(BinaryTreeNode *nodeA, BinaryTreeNode *nodeB);
+bool hasSubTree = false;
+bool HasSubTree(BinaryTreeNode *A, BinaryTreeNode *B){
+    if (A == nullptr && B == nullptr) {
+        return false;
+    }
+    HasSubTreeCore1(A, B);
+    return hasSubTree;
+}
+//前序遍历
+void HasSubTreeCore1(BinaryTreeNode *nodeA, BinaryTreeNode *nodeB){
+    if (nodeA->m_nValue == nodeB->m_nValue) {
+        HasSubTreeCore(nodeA, nodeB, &hasSubTree);
+    }
+    if (nodeA->m_pLeft) {
+        HasSubTreeCore1(nodeA->m_pLeft, nodeB);
+    }
+    if (nodeA->m_pRight) {
+        HasSubTreeCore1(nodeA->m_pRight, nodeB);
+    }
+}
+
+void HasSubTreeCore(BinaryTreeNode *nodeA, BinaryTreeNode *nodeB, bool *bSubTree){
+    *bSubTree = nodeA->m_nValue == nodeB->m_nValue;
+    if (nodeA->m_pLeft&&nodeB->m_pLeft) {
+        HasSubTreeCore(nodeA->m_pLeft, nodeB->m_pLeft, bSubTree);
+    }
+    if (nodeA->m_pRight&&nodeB->m_pRight) {
+        HasSubTreeCore(nodeA->m_pRight, nodeB->m_pRight, bSubTree);
+    }
+}
+
+#pragma mark 27 二叉树的镜像问题
+/*
+        1                1
+      /   \            /   \
+     2     3          3     2
+    / \   / \        / \   / \
+   4   5 6   7      7   6  5  4
+ */
+#pragma mark 前序遍历、交换左右节点
+void MirrorBinaryTreeCore(BinaryTreeNode *node);
+BinaryTreeNode *MirrorBinaryTree(BinaryTreeNode *head){
+    if (head == nullptr) {
+        return nullptr;
+    }
+    MirrorBinaryTreeCore(head);
+    return head;
+}
+void MirrorBinaryTreeCore(BinaryTreeNode *node){
+    if (node->m_pLeft && node->m_pRight) {
+        BinaryTreeNode *temp = node->m_pLeft;
+        node->m_pLeft = node->m_pRight;
+        node->m_pRight = temp;
+    }
+    if (node->m_pLeft) {
+        MirrorBinaryTreeCore(node->m_pLeft);
+    }
+    if (node->m_pRight) {
+        MirrorBinaryTreeCore(node->m_pRight);
+    }
+}
+
+#pragma mark 28 对称二叉树
+bool isSymmetricalCore(BinaryTreeNode *head1, BinaryTreeNode *head2);
+bool isSymmetrical(BinaryTreeNode *head){
+    if (head == nullptr) {
+        return false;
+    }
+    return isSymmetricalCore(head, head);
+}
+bool isSymmetricalCore(BinaryTreeNode *head1, BinaryTreeNode *head2){
+    if (head1 == nullptr || head2 == nullptr) {
+        return true;
+    }
+    if (head1 == nullptr || head2 == nullptr) {
+        return false;
+    }
+    if (head1->m_nValue != head2->m_nValue) {
+        return false;
+    }
+    return isSymmetricalCore(head1->m_pLeft, head2->m_pRight) &&  isSymmetricalCore(head1->m_pRight, head2->m_pLeft);
+}
+
+#pragma mark 33 二叉搜索树的后续遍历序列
+/*
+ 题目描述：给定数组，判断其是否是某一个二叉搜索树的后续遍历序列
+ 题目解析：后续遍历序列，根节点是最后一个，获取最后一个节点，通过比较，
+         获取左右子树，获取小于根节点的数据，data[i]<root break;
+ */
+bool verifySequenceOfBST(int *data, int length){
+    if (data == nullptr || length < 0) {
+        return false;
+    }
+    int root = data[length-1];
+    int i = 0;
+    for(; i < length-1; ++i){
+        if(data[i]>root) break;
+    }
+    int j = i;
+    for(; j < length-1;++j){
+        if (data[j]<root) {
+            return false;
+        }
+    }
+    bool left = true;
+    if (i>0) {
+        left = verifySequenceOfBST(data, i);
+    }
+    bool right = true;
+    if (i < length-1) {
+        right = verifySequenceOfBST(data+i, length-i-1);
+    }
+    return (left && right);
 }
 
 #pragma mark - stack & queue
@@ -933,10 +1055,86 @@ ListNode *middleOfList(ListNode *head){
 }
 
 #pragma mark 23 列表中环的入口(快慢指针)
+ListNode *meetingNode(ListNode *head){
+    if (head == nullptr) {
+        return nullptr;
+    }
+    ListNode *fast = head->next->next;
+    ListNode *slow = head->next;
+    while (fast->value != slow->value) {
+        fast=fast->next->next;
+        slow=slow->next;
+    }
+    return slow;
+}
+
+ListNode *startNodeOfLoop(ListNode *head){
+    if (head == nullptr) {
+        return nullptr;
+    }
+    ListNode *meetNode = meetingNode(head);
+    ListNode *nodeA = head;
+    ListNode *nodeB = meetNode;
+    while (nodeA->value!=nodeB->value) {
+        nodeA = nodeA->next;
+        nodeB = nodeB->next;
+    }
+    return nodeB;
+}
 
 #pragma mark 24 反转列表
+void revertList(ListNode *head){
+    if (head == nullptr) {
+        return;
+    }
+    ListNode *pre = nullptr;
+    ListNode *curr = head;
+    while (curr != nullptr) {
+        ListNode *next = curr->next;
+        curr->next = pre;
+        pre = curr;
+        curr = next;
+    }
+}
 
 #pragma mark 25 合并两个有序列表
+ListNode * mergeTwoSortList(ListNode *list1, ListNode *list2){
+    if (list1 == nullptr && list2 == nullptr) {
+        return nullptr;
+    }
+    if (list1 != nullptr && list2 == nullptr) {
+        return list1;
+    }
+    if (list1 == nullptr && list2 != nullptr) {
+        return list2;
+    }
+    ListNode *head = new ListNode();
+    ListNode *ret = head;
+    ListNode *node1 = list1;
+    ListNode *node2 = list2;
+    while (node1 || node2) {
+        if (node1 && node2) {
+            if (node1->value <= node2->value) {
+                head->next = node1;
+                node1 = node1->next;
+                head=head->next;
+            }else if(node1->value > node2->value){
+                head->next = node2;
+                node2 = node2->next;
+                head=head->next;
+            }
+        }else if(node1){
+            head->next = node1;
+            node1 = node1->next;
+            head = head->next;
+        }else if(node2){
+            head->next = node2;
+            node2 = node2->next;
+            head = head->next;
+        }
+    }
+    return ret->next;
+}
 
 #pragma mark 18 删除列表的节点
 #pragma mark 题目一：在O(1)时间内删除链表的节点
@@ -1252,6 +1450,13 @@ void ReorderOddEventTest(int *data, int length){
 #pragma mark - Test
 void FindKthToTailTest();
 void middleOfListTest();
+void revertListTest();
+void mergeTwoSortListTest();
+void subTreeTest();
+void startNodeOfLoopTest();
+void mirrorBinaryTreeTest();
+void isSymmetricalTest();
+void verifySequenceOfBSTTest();
 #pragma mark - main
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
@@ -1511,10 +1716,33 @@ int main(int argc, const char * argv[]) {
         
         
         FindKthToTailTest();
+        
         middleOfListTest();
+        
+        revertListTest();
+        
+        mergeTwoSortListTest();
+        
+        subTreeTest();
+        
+        startNodeOfLoopTest();
+        
+        mirrorBinaryTreeTest();
+        
+        isSymmetricalTest();
+        
+        verifySequenceOfBSTTest();
     }
     
     return 0;
+}
+
+void printList(ListNode *head){
+    while (head != nullptr) {
+        printf("%d ", head->value);
+        head = head->next;
+    }
+    printf("\n");
 }
 
 void FindKthToTailTest(){
@@ -1555,4 +1783,137 @@ void middleOfListTest(){
 
     ListNode *node_1 = middleOfList(pNode1);
     printf("pNode %d \n", node_1?node_1->value:-1);
+}
+
+
+void revertListTest(){
+    ListNode* pNode1 = createNode(1);
+    ListNode* pNode2 = createNode(2);
+    ListNode* pNode3 = createNode(3);
+    ListNode* pNode4 = createNode(4);
+    ListNode* pNode5 = createNode(5);
+    ListNode* pNode6 = createNode(6);
+
+    connectList(pNode1, pNode2);
+    connectList(pNode2, pNode3);
+    connectList(pNode3, pNode4);
+    connectList(pNode4, pNode5);
+    connectList(pNode5, pNode6);
+
+    revertList(pNode1);
+    printList(pNode6);
+}
+
+void mergeTwoSortListTest(){
+    ListNode* pNode1_1 = createNode(1);
+    ListNode* pNode1_2 = createNode(3);
+    ListNode* pNode1_3 = createNode(5);
+    ListNode* pNode1_4 = createNode(7);
+    ListNode* pNode1_5 = createNode(9);
+    ListNode* pNode1_6 = createNode(11);
+
+    connectList(pNode1_1, pNode1_2);
+    connectList(pNode1_2, pNode1_3);
+    connectList(pNode1_3, pNode1_4);
+    connectList(pNode1_4, pNode1_5);
+    connectList(pNode1_5, pNode1_6);
+    
+    
+    ListNode* pNode2_1 = createNode(2);
+    ListNode* pNode2_2 = createNode(3);
+    ListNode* pNode2_3 = createNode(4);
+    ListNode* pNode2_4 = createNode(6);
+    ListNode* pNode2_5 = createNode(7);
+    ListNode* pNode2_6 = createNode(8);
+
+    connectList(pNode2_1, pNode2_2);
+    connectList(pNode2_2, pNode2_3);
+    connectList(pNode2_3, pNode2_4);
+    connectList(pNode2_4, pNode2_5);
+    connectList(pNode2_5, pNode2_6);
+    
+    mergeTwoSortList(pNode1_1, pNode2_1);
+    printList(pNode1_1);
+}
+
+void subTreeTest(){
+    BinaryTreeNode *root = createBinaryTree(1);
+    BinaryTreeNode *left1 = createBinaryTree(2);
+    BinaryTreeNode *right1 = createBinaryTree(3);
+    BinaryTreeNode *left1_1 = createBinaryTree(4);
+    BinaryTreeNode *right1_1 = createBinaryTree(5);
+    BinaryTreeNode *right1_2 = createBinaryTree(6);
+    
+    connectBinaryTree(root, left1, right1);
+    connectBinaryTree(left1, left1_1, nullptr);
+    connectBinaryTree(right1, right1_1, right1_2);
+    
+    BinaryTreeNode *root2 = createBinaryTree(3);
+    BinaryTreeNode *left2_1 = createBinaryTree(5);
+    BinaryTreeNode *right2_1 = createBinaryTree(6);
+    connectBinaryTree(root2, left2_1, right2_1);
+    
+    printf("has sub tree %d \n", HasSubTree(root, root2));
+}
+void startNodeOfLoopTest(){
+    ListNode *head = createNode(1);
+    ListNode *node1 = createNode(2);
+    ListNode *node2 = createNode(3);
+    ListNode *node3 = createNode(4);
+    ListNode *node4 = createNode(5);
+    ListNode *node5 = createNode(6);
+    ListNode *node6 = createNode(7);
+    ListNode *node7 = createNode(8);
+    ListNode *node8 = createNode(9);
+    node8->next = node3;
+    
+    connectList(head, node1);
+    connectList(node1, node2);
+    connectList(node2, node3);
+    connectList(node3, node4);
+    connectList(node4, node5);
+    connectList(node5, node6);
+    connectList(node6, node7);
+    connectList(node7, node8);
+    connectList(node8, node4);
+    
+    printf("start node %d \n", startNodeOfLoop(head)->value);
+}
+
+void mirrorBinaryTreeTest(){
+    BinaryTreeNode *root = createBinaryTree(1);
+    BinaryTreeNode *left1 = createBinaryTree(2);
+    BinaryTreeNode *right1 = createBinaryTree(3);
+    BinaryTreeNode *left1_1 = createBinaryTree(4);
+    BinaryTreeNode *right1_1 = createBinaryTree(5);
+    BinaryTreeNode *right1_2 = createBinaryTree(6);
+    
+    connectBinaryTree(root, left1, right1);
+    connectBinaryTree(left1, left1_1, nullptr);
+    connectBinaryTree(right1, right1_1, right1_2);
+    
+    printBinaryTreeLevel(root);
+    MirrorBinaryTree(root);
+    printBinaryTreeLevel(root);
+}
+
+void isSymmetricalTest(){
+    BinaryTreeNode *root = createBinaryTree(1);
+    BinaryTreeNode *node61 = createBinaryTree(6);
+    BinaryTreeNode *node62 = createBinaryTree(6);
+    BinaryTreeNode *node51 = createBinaryTree(5);
+    BinaryTreeNode *node71 = createBinaryTree(7);
+    BinaryTreeNode *node72 = createBinaryTree(7);
+    BinaryTreeNode *node52 = createBinaryTree(5);
+
+    connectBinaryTree(root, node61, node62);
+    connectBinaryTree(node61, node51, node71);
+    connectBinaryTree(node62, node72, node52);
+    
+    printf("tree is %s Symmetrical tree \n", isSymmetrical(root)?"":"not");
+}
+
+void verifySequenceOfBSTTest(){
+    int data[7] = {5,7,6,9,11,10,8};
+    printf("sequence is %s BST of tree \n", verifySequenceOfBST(data, 7)?"":"not");
 }
