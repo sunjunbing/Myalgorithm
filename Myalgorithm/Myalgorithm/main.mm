@@ -6,6 +6,49 @@
 //  Copyright © 2020 sjuinan. All rights reserved.
 //
 
+/*
+ 01.数组中重复的数字(在正整数数组中，查找唯一一个重复的元素，至少用3种解法)
+ 02.二维数组中查找(1.首先二维数组是有序的 2.从右上角开始比较)
+ 03.字符串空格替换(1.先计算出所有的空格 2.初始化一个对应长度的字符串 3.从后向前替换)
+ 04.从尾到头打印链表(1.先反转列表 2.在打印链表)
+ 05.重建二叉树(根据前序和中序序列来重建二叉树)
+ 06.二叉树的下一个节点(输出中序遍历的下一个节点)
+ 07.用两个栈实现队列
+ 08.斐波那契数列(从0、1开始)
+ 09.旋转数组最小的数字(双指针法)
+ 10.矩阵中的路径(回溯)
+ 11.机器人的运动范围(回溯)
+ 12.剪绳子(贪心算法，尽量的剪长度为3)
+ 13.二进制中1的个数(减-处理)
+ 14.数值的整数次方
+ 15.打印从1到最大的n位数(大数问题，字符串处理)
+ 16.删除列表的节点(O(1)时间复杂度，复制、删除)
+ 17.正则表达式匹配(遍历、分情况讨论)
+ 18.表示数值的字符串(遍历、分情况讨论)
+ 19.调整数组顺序使得奇数位于偶数前面(双指针)
+ 20.列表中倒数第k个节点(倒数第k个节点==正数第k+1个节点)
+ 21.链表中环的入口节点(快慢指针 x+y = x+y+z+y => x=z)
+ 22.反转列表
+ 23.合并两个有序列表
+ 24.树的子结构(遍历)
+ 25.二叉树的镜像(判断子节点是否正好相反)
+ 26.对称二叉树
+ 27.顺时针打印矩阵
+ 28.包含min函数的栈(模版类)
+ 29.栈的压入、弹出序列(根据弹出序列与栈顶元素比较，相等弹出，不等压栈)
+ 30.从上到下打印二叉树(双端队列)
+ 31.二叉搜索树的后序遍历序列
+ 32.二叉搜索树和为某一值的路径
+ 33.复杂列表的复制
+ 34.二叉搜索树和双向列表
+ 35.序列化二叉树
+ 36.字符串排列
+ 37.数组中出现次数超过一半的数字
+ 38.最小的k个数
+ 39.数据流中的中位数
+ 40.连续子数组的最大和
+ */
+
 #import <Foundation/Foundation.h>
 #import <vector>
 #import <queue>
@@ -18,6 +61,8 @@
 #include <stack>
 #include <exception>
 #include <string>
+#include <iostream>
+#include <fstream>
 
 #pragma mark - 数组中重复出现的数字
 //题目描述：在一个长度为n的数组里所有的数字都在0～n-1的范围内，数组中默写数字是重复的，但是不知道有几个重复，也不知道每个数字重复了几次，请找出数组中任意一个重复的数字
@@ -190,7 +235,7 @@ void replaceBlank(char string[], int length){
 }
 
 #pragma mark - 二叉树
-#pragma mark 有关二叉搜索树的题目26、27、28、32、33、36、37
+#pragma mark 有关二叉搜索树的题目26、27、28、32、33、34、36、37
 struct BinaryTreeNode{
     int m_nValue;
     BinaryTreeNode *m_pLeft;
@@ -204,6 +249,15 @@ BinaryTreeNode *createBinaryTree(int value){
     node->m_pLeft = nullptr;
     node->m_pRight = nullptr;
     return node;
+}
+
+void DestoryTree(BinaryTreeNode *pNode){
+    if (pNode) {
+        delete pNode;
+        return;
+    }
+    DestoryTree(pNode->m_pLeft);
+    DestoryTree(pNode->m_pRight);
 }
 void connectBinaryTree(BinaryTreeNode *root, BinaryTreeNode *left, BinaryTreeNode *right){
     if (root) {
@@ -344,8 +398,8 @@ void printBinaryTreeWithZ(BinaryTreeNode *head){
 }
 
 #pragma mark 二叉树的下一个节点
-#pragma mark 给定一个二叉树和其中一个节点，请找出中序遍历的下一个节点
 /*
+ 给定一个二叉树和其中一个节点，请找出中序遍历的下一个节点
  题目解析:有右子节点和其他节点
  */
 BinaryTreeNode *getNext(BinaryTreeNode *node){
@@ -487,6 +541,131 @@ bool verifySequenceOfBST(int *data, int length){
         right = verifySequenceOfBST(data+i, length-i-1);
     }
     return (left && right);
+}
+
+#pragma mark 34 二叉树中和为某一值的路径
+void pathOfBinaryTreeCore(BinaryTreeNode *node, int n, std::deque<int> deque);
+bool isN(std::deque<int> stack, int n);
+void printN(std::deque<int> stack);
+void pathOfBinaryTree(BinaryTreeNode *head, int n){
+    if (head == nullptr || n == 0) {
+        return;
+    }
+    std::deque<int> deque;
+    pathOfBinaryTreeCore(head, n, deque);
+}
+void pathOfBinaryTreeCore(BinaryTreeNode *node, int n, std::deque<int> deque){
+    deque.push_back(node->m_nValue);
+    if (isN(deque, n) && node->m_pLeft == nullptr && node->m_pRight == nullptr)
+        printN(deque);
+    if (node->m_pLeft) {
+        pathOfBinaryTreeCore(node->m_pLeft, n, deque);
+    }
+    if (node->m_pRight) {
+        pathOfBinaryTreeCore(node->m_pRight, n, deque);
+    }
+    deque.pop_back();
+}
+bool isN(std::deque<int> deque, int n){
+    std::deque<int>::iterator ite = deque.begin();
+    int temp = 0;
+    for(;ite != deque.end();ite++){
+        temp += *ite;
+    }
+    if (n == temp) {
+        return true;
+    }
+    return false;
+}
+void printN(std::deque<int> deque){
+    std::deque<int>::iterator ite = deque.begin();
+    for(;ite != deque.end();ite++){
+        printf("%d ", *ite);
+    }
+}
+
+
+#pragma mark 36 二叉树中和双向列表
+/*
+ 将一个二叉搜索树转换为有序双向列表
+ 中序遍历解决
+ */
+void convert(BinaryTreeNode *node, BinaryTreeNode **list);
+BinaryTreeNode * convertNotToList(BinaryTreeNode *node){
+    if (node == nullptr) {
+        return nullptr;
+    }
+    BinaryTreeNode *list = nullptr;
+    convert(node, &list);
+    while (list->m_pLeft) {
+        list=list->m_pLeft;
+    }
+    return list;
+}
+void convert(BinaryTreeNode *node, BinaryTreeNode **list){
+    if (node == nullptr) {
+        return;
+    }
+    BinaryTreeNode *current = node;
+    if (node->m_pLeft) {
+        convert(node->m_pLeft, list);
+    }
+    node->m_pLeft = *list;
+    if (*list!=nullptr) (*list)->m_pRight = node;
+    *list = current;
+    if (node->m_pRight) {
+        convert(node->m_pRight, list);
+    }
+}
+
+
+/*
+ 实现两个函数，分别用来序列话和反序列化二叉树
+ */
+void Serialize(BinaryTreeNode *pNode, std::ostream& stream){
+    if (pNode == nullptr) {
+        stream << "$,";
+        return;
+    }
+    stream << pNode->m_nValue << ',';
+    Serialize(pNode->m_pLeft, stream);
+    Serialize(pNode->m_pRight, stream);
+}
+
+bool ReadStream(std::istream& stream, int *number){
+    if (stream.eof()) {
+        return false;
+    }
+    char buffer[32];
+    buffer[0] = '\0';
+    
+    char ch;
+    stream >> ch;
+    int i = 0;
+    while (!stream.eof() && ch != ',') {
+        buffer[i++] = ch;
+        stream >> ch;
+    }
+    
+    bool isNumeric = false;
+    if (i > 0 && buffer[0] != '$') {
+        *number = atoi(buffer);
+        isNumeric = true;
+    }
+    
+    return isNumeric;
+}
+
+void Deserialize(BinaryTreeNode **pNode, std::istream& stream){
+    int number;
+    if (ReadStream(stream, &number)) {
+        *pNode = new BinaryTreeNode();
+        (*pNode)->m_nValue = number;
+        (*pNode)->m_pLeft = nullptr;
+        (*pNode)->m_pRight = nullptr;
+        Deserialize(&(*pNode)->m_pLeft, stream);
+        Deserialize(&(*pNode)->m_pRight, stream);
+    }
 }
 
 #pragma mark - stack & queue
@@ -973,6 +1152,7 @@ double MyPower(double base, int expense){
 struct ListNode{
     int value;
     ListNode *next;
+    ListNode *m_pSibling;
 };
 
 void connectList(ListNode *head, ListNode *node){
@@ -1225,6 +1405,56 @@ ListNode * connectNode(ListNode *head, ListNode *currentNode){
     return head;
 }
 
+#pragma mark 35 复杂列表的复制
+/*
+ 1.复制节点
+ 2.链接sibling节点
+ 3.reconnect
+ */
+ListNode * copyNode(ListNode *node){
+    if (node == nil) {
+        return nil;
+    }
+    ListNode *copyNode = new ListNode();
+    copyNode->value = node->value;
+    copyNode->next = node->next;
+    copyNode->m_pSibling = node->m_pSibling;
+    return copyNode;
+}
+
+ListNode *complexListCopy(ListNode *head){
+    if (head == nullptr) {
+        return nil;
+    }
+    
+    ListNode *nextNode = head;
+    while (nextNode != nullptr) {
+        ListNode *cpNode = copyNode(nextNode);
+        ListNode *temp = nextNode->next;
+        nextNode->next = cpNode;
+        cpNode->next = temp;
+        nextNode = temp;
+    }
+    
+    ListNode *ntNode = head;
+    ListNode *cpedNode = head->next;
+    ListNode *ret = cpedNode;
+    ListNode *ret1 = ret;
+    while (cpedNode != nullptr) {
+        if (ntNode->m_pSibling && ntNode->m_pSibling->next) {
+            cpedNode->m_pSibling = ntNode->m_pSibling->next;
+        }
+        ntNode = cpedNode->next;
+        if (ntNode ==  nullptr) {
+            break;
+        }
+        cpedNode = ntNode->next;
+        ret->next = cpedNode;
+        ret = ret->next;
+    }
+    return ret1;
+}
+
 #pragma mark - 字符串操作
 #pragma mark 17 打印从1到最大的n位数
 #pragma mark 解法一：常规解法
@@ -1447,6 +1677,150 @@ void ReorderOddEventTest(int *data, int length){
 }
 
 
+#pragma mark - 29 顺时针打印矩阵
+void printMatrixInCircle(int **numbers, int rows, int cols, int start);
+void printMatrixInClock(int ** numbers, int rows, int cols){
+    if (numbers == nullptr || rows <= 0 ||cols <= 0) {
+        return;
+    }
+    int start = 0;
+    while (rows > start * 2 && cols > start * 2) {
+        printMatrixInCircle(numbers, rows, cols, start);
+        ++start;
+    }
+}
+void printMatrixInCircle(int **numbers, int rows, int cols, int start){
+    int endX = cols - 1 - start;
+    int endY = rows - 1 - start;
+
+    //print left to right
+    for(int currentCol = start; currentCol <= endX; ++currentCol){
+        int number = numbers[start][currentCol];
+        printf("%d ",number);
+    }
+
+    //print top to bottom
+    if(start < endY){
+        for(int currentRow = start+1; currentRow <= endY; ++currentRow){
+            int number = numbers[currentRow][endX];
+            printf("%d ", number);
+        }
+    }
+    
+    //print right to left
+    if (start < endX && start < endY) {
+        for(int currenttRtL = endX-1; currenttRtL >= start; --currenttRtL){
+            int number = numbers[endY][currenttRtL];
+            printf("%d ", number);
+        }
+    }
+
+    if (start < endX && start < endY-1) {
+        //print bottom to top
+        for(int i = endY-1; i >= start+1; --i){
+            int number = numbers[i][start];
+            printf("%d ", number);
+        }
+    }
+
+
+}
+
+#pragma mark - 包含min函数的栈，使用模版类
+template <typename T> class StackWithMin{
+public:
+    StackWithMin(){}
+    virtual ~StackWithMin(){}
+    
+    T& top();
+    const T& top() const;
+    
+    void push(const T& value);
+    void pop();
+    
+    const T& min() const;
+    
+    bool empty() const;
+    size_t size() const;
+    
+private:
+    std::stack<T> m_data;
+    std::stack<T> m_min;
+};
+
+template <typename T> void StackWithMin<T>::push(const T& value){
+    m_data.push(value);
+    if (m_min.size() == 0 || value < m_min.top()) {
+        m_min.push(value);
+    }else{
+        m_min.push(m_min.top());
+    }
+}
+
+template <typename T> void StackWithMin<T>::pop(){
+    assert(m_data.size()>0 && m_min.size() > 0);
+    m_data.pop();
+    m_min.pop();
+}
+
+template <typename T> const T& StackWithMin<T>::min() const{
+    assert(m_data.size() > 0 && m_min.size() > 0);
+    return m_min.top();
+}
+
+template <typename T> T& StackWithMin<T>::top(){
+    return m_data.top();
+}
+
+template <typename T> const T& StackWithMin<T>::top() const
+{
+    return m_data.top();
+}
+
+template <typename T> bool StackWithMin<T>::empty() const
+{
+    return m_data.empty();
+}
+
+template <typename T> size_t StackWithMin<T>::size() const
+{
+    return m_data.size();
+}
+
+#pragma mark - 栈的压入、弹出序列
+bool isPopOrder(const int *push, const int *pop, int length){
+    if (push == nullptr || pop == nullptr || length < 0) {
+        return false;
+    }
+    const int *nextPush = push;
+    const int *nextPop = pop;
+    
+    std::stack<int> stack;
+    
+    while (nextPop - pop < length) {
+        while (stack.empty() || *nextPop != stack.top()) {
+            if (nextPush - push == length) {
+                break;
+            }
+            stack.push(*nextPush);
+            nextPush++;
+        }
+        
+        if (*nextPop != stack.top()) {
+            break;
+        }
+        
+        stack.pop();
+        nextPop++;
+    }
+    
+    if (stack.empty() && nextPop - pop == length) {
+        return true;
+    }
+    return false;
+}
+
+
 #pragma mark - Test
 void FindKthToTailTest();
 void middleOfListTest();
@@ -1457,6 +1831,14 @@ void startNodeOfLoopTest();
 void mirrorBinaryTreeTest();
 void isSymmetricalTest();
 void verifySequenceOfBSTTest();
+void pathOfBinaryTreeTest();
+void convertNodeToListTest();
+void serializeOrDeserializeTest();
+void printMatrixTest();
+void stackWitMinTest();
+void isPopOrderTest();
+void complexListCopyTest();
+
 #pragma mark - main
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
@@ -1732,6 +2114,18 @@ int main(int argc, const char * argv[]) {
         isSymmetricalTest();
         
         verifySequenceOfBSTTest();
+        
+        pathOfBinaryTreeTest();
+        
+        convertNodeToListTest();
+        
+        printMatrixTest();
+        
+        stackWitMinTest();
+        
+        isPopOrderTest();
+        
+        complexListCopyTest();
     }
     
     return 0;
@@ -1916,4 +2310,182 @@ void isSymmetricalTest(){
 void verifySequenceOfBSTTest(){
     int data[7] = {5,7,6,9,11,10,8};
     printf("sequence is %s BST of tree \n", verifySequenceOfBST(data, 7)?"":"not");
+}
+
+void pathOfBinaryTreeTest(){
+    BinaryTreeNode *root = createBinaryTree(1);
+    BinaryTreeNode *node61 = createBinaryTree(2);
+    BinaryTreeNode *node62 = createBinaryTree(3);
+    BinaryTreeNode *node51 = createBinaryTree(4);
+    BinaryTreeNode *node71 = createBinaryTree(5);
+
+    connectBinaryTree(root, nullptr, node61);
+    connectBinaryTree(node61, nullptr, node62);
+    connectBinaryTree(node62, nullptr, node51);
+    connectBinaryTree(node51, nullptr, node71);
+    
+    pathOfBinaryTree(root, 15);
+    printf("\n");
+}
+
+void convertNodeToListTest(){
+    BinaryTreeNode *root = createBinaryTree(10);
+    
+    BinaryTreeNode *left1 = createBinaryTree(6);
+    BinaryTreeNode *right1 = createBinaryTree(14);
+    
+    BinaryTreeNode *left1_1 = createBinaryTree(4);
+    BinaryTreeNode *left1_2 = createBinaryTree(8);
+    
+    BinaryTreeNode *right1_1 = createBinaryTree(12);
+    BinaryTreeNode *right1_2 = createBinaryTree(16);
+
+    connectBinaryTree(root, left1, right1);
+    connectBinaryTree(left1, left1_1, left1_2);
+    connectBinaryTree(right1, right1_1, right1_2);
+
+    BinaryTreeNode *List = convertNotToList(root);
+    while (List) {
+        printf("%d ", List->m_nValue);
+        List=List->m_pRight;
+    }
+    printf("\n");
+}
+
+void TestPrintMatrix(int columns, int rows)
+{
+    printf("Test Begin: %d columns, %d rows.\n", columns, rows);
+
+    if(columns <= 0 || rows <= 0)
+        return;
+
+    int** numbers = new int*[rows];
+    for(int i = 0; i < rows; ++i)
+    {
+        numbers[i] = new int[columns];
+        for(int j = 0; j < columns; ++j)
+        {
+            numbers[i][j] = i * columns + j + 1;
+        }
+    }
+
+    printMatrixInClock(numbers, rows, columns);
+    printf("\n");
+
+    for(int i = 0; i < rows; ++i)
+        delete[] (int*)numbers[i];
+
+    delete[] numbers;
+}
+void printMatrixTest(){
+    TestPrintMatrix(5,5);
+    TestPrintMatrix(2,2);
+    TestPrintMatrix(3,3);
+    TestPrintMatrix(1,1);
+    TestPrintMatrix(1,5);
+}
+
+void stackWitMinTest(){
+    StackWithMin<int> stack;
+    
+    stack.push(3);
+    printf("%d ", stack.min());
+    
+    stack.push(4);
+    printf("%d ", stack.min());
+    
+    stack.push(5);
+    printf("%d ", stack.min());
+    
+    stack.push(2);
+    printf("%d ", stack.min());
+    
+    stack.push(6);
+    printf("%d ", stack.min());
+    
+    printf("\n");
+}
+
+void isPopOrderTest(){
+    int push[5] = {1,2,3,4,5};
+    int pop1[5] = {4,5,3,2,1};
+    int pop2[5] = {4,3,5,1,2};
+    printf("isPopOrder %d \n", isPopOrder(push, pop1, 5));
+    printf("isPopOrder %d \n", isPopOrder(push, pop2, 5));
+}
+
+void Test1(){
+    ListNode *node0 = createNode(0);
+    ListNode *node1 = createNode(1);
+    ListNode *node2 = createNode(2);
+    ListNode *node3 = createNode(3);
+    ListNode *node4 = createNode(4);
+    ListNode *node5 = createNode(5);
+    ListNode *node6 = createNode(6);
+    
+    connectList(node0, node1); node0->m_pSibling = node3; //(0,1,3)
+    connectList(node1, node2); node1->m_pSibling = node5; //(1,2,5)
+    connectList(node2, node3); node2->m_pSibling = node5; //(2,3,5)
+    connectList(node3, node4); node3->m_pSibling = node5; //(3,4,5)
+    connectList(node4, node5); node4->m_pSibling = node2; //(4,5,2)
+    connectList(node5, node6); node5->m_pSibling = node3; //(5,6,3)
+                               node6->m_pSibling = node3; //(6,0,3)
+    
+
+    ListNode *cpNode = complexListCopy(node0);
+    while (cpNode != nullptr) {
+        printf("%d %d %d \n", cpNode->value, cpNode->next?cpNode->next->value:0, cpNode->m_pSibling->value);
+        cpNode = cpNode->next;
+    }
+}
+
+void Test2(){
+    
+    ListNode *node0 = createNode(0);
+    ListNode *node1 = createNode(1);
+    ListNode *node2 = createNode(2);
+    ListNode *node3 = createNode(3);
+    ListNode *node4 = createNode(4);
+    
+    connectList(node0, node1);  //(0,1,0)
+    connectList(node1, node2); node1->m_pSibling = node3; //(1,2,3)
+    connectList(node2, node3);  //(2,3,0)
+    connectList(node3, node4); node3->m_pSibling = node2; //(3,4,2)
+                                                          //(4,0,0)
+    
+    ListNode *cpNode = complexListCopy(node0);
+    while (cpNode != nullptr) {
+        printf("%d %d %d \n", cpNode?cpNode->value:0, cpNode->next?cpNode->next->value:0, cpNode->m_pSibling?cpNode->m_pSibling->value:0);
+        cpNode = cpNode->next;
+    }
+}
+
+void Test3(){
+    ListNode *node0 = nullptr;
+    ListNode *cpNode = complexListCopy(node0);
+    while (cpNode != nullptr) {
+        printf("%d %d %d \n", cpNode?cpNode->value:0, cpNode->next?cpNode->next->value:0, cpNode->m_pSibling?cpNode->m_pSibling->value:0);
+        cpNode = cpNode->next;
+    }
+}
+
+void Test4(){
+    ListNode *node0 = createNode(0);
+    connectList(node0, nullptr); node0->m_pSibling = node0;  //(0,0,0)
+    ListNode *cpNode = complexListCopy(node0);
+    while (cpNode != nullptr) {
+        printf("%d %d %d \n", cpNode?cpNode->value:0, cpNode->next?cpNode->next->value:0, cpNode->m_pSibling?cpNode->m_pSibling->value:0);
+        cpNode = cpNode->next;
+    }
+}
+
+void complexListCopyTest(){
+ 
+    Test1();
+    printf("\n");
+    Test2();
+    printf("\n");
+    Test3();
+    printf("\n");
+    Test4();
 }
