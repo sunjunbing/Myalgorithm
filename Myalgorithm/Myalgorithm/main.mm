@@ -1639,6 +1639,30 @@ void isNumericTest(const char *name, char *str, bool expected){
     printf("%s %s Numeric \n", str, isNumeric(str)?"is":"is not");
 }
 
+
+#pragma mark - 38 字符串全排列
+void printAllStrCore(char *str, char *begin){
+    if (*begin == '\0') {
+        printf("%s\n", str);
+    }else{
+        for(char *pCh = begin; *pCh != '\0'; pCh++){
+            char temp = *pCh;
+            *pCh = *begin;
+            *begin = temp;
+            printAllStrCore(str, begin+1);
+            temp = *pCh;
+            *pCh = *begin;
+            *begin = temp;
+        }
+    }
+}
+void printAllStr(char *str){
+    if (str == nullptr ) {
+        return;
+    }
+    printAllStrCore(str, str);
+}
+
 #pragma mark - 21 调整数组使奇数位于偶数前面
 #pragma mark 时间复杂度O(n)，空间复杂度O(1)
 bool isOdd(int *data, unsigned int length, int index);
@@ -1838,6 +1862,7 @@ void printMatrixTest();
 void stackWitMinTest();
 void isPopOrderTest();
 void complexListCopyTest();
+void printAllStrTest();
 
 #pragma mark - main
 int main(int argc, const char * argv[]) {
@@ -2126,6 +2151,8 @@ int main(int argc, const char * argv[]) {
         isPopOrderTest();
         
         complexListCopyTest();
+        
+        printAllStrTest();
     }
     
     return 0;
@@ -2488,4 +2515,9 @@ void complexListCopyTest(){
     Test3();
     printf("\n");
     Test4();
+}
+
+void printAllStrTest(){
+    char str1[] = "abcd";
+    printAllStr(str1);
 }
