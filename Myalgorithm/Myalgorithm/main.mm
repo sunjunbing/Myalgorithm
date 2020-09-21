@@ -7,6 +7,7 @@
 //
 
 /*
+ 把这66道题，信手捏来
  01.数组中重复的数字(在正整数数组中，查找唯一一个重复的元素，至少用3种解法)
  02.二维数组中查找(1.首先二维数组是有序的 2.从右上角开始比较)
  03.字符串空格替换(1.先计算出所有的空格 2.初始化一个对应长度的字符串 3.从后向前替换)
@@ -42,11 +43,21 @@
  33.复杂列表的复制
  34.二叉搜索树和双向列表
  35.序列化二叉树
- 36.字符串排列
+ 36.字符串排列(全排列)
  37.数组中出现次数超过一半的数字
  38.最小的k个数
  39.数据流中的中位数
  40.连续子数组的最大和
+ 41.数据流中的中位数
+ 42.连续子数组的最大和
+ 43.1～n整数中1出现的次数
+ 44.数字序列中某一位的数字
+ 45.把数组排成最小的数
+ 46.把数字翻译成字符串
+ 47.礼物的最大值
+ 48.最长不含重复字符的子字符串
+ 49.丑叔
+ 50.第一个只出现一次的字符
  */
 
 #import <Foundation/Foundation.h>
@@ -63,6 +74,8 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+
+using namespace std;
 
 #pragma mark - 数组中重复出现的数字
 //题目描述：在一个长度为n的数组里所有的数字都在0～n-1的范围内，数组中默写数字是重复的，但是不知道有几个重复，也不知道每个数字重复了几次，请找出数组中任意一个重复的数字
@@ -1640,7 +1653,7 @@ void isNumericTest(const char *name, char *str, bool expected){
 }
 
 
-#pragma mark - 38 字符串全排列
+#pragma mark 38 字符串全排列
 void printAllStrCore(char *str, char *begin){
     if (*begin == '\0') {
         printf("%s\n", str);
@@ -1662,6 +1675,137 @@ void printAllStr(char *str){
     }
     printAllStrCore(str, str);
 }
+
+#pragma mark 字符串的所有组合
+/*
+ 1.情况1:组合包含当前的字符，下一步就要在剩余的字符中寻找m-1个字符
+ 2.情况2:组合中不包含当前的字符，下一步就要在剩余的字符中寻找m-1个字符
+ */
+void combination(char* str, int subLength, std::vector<char> &rs){
+    if (subLength == 0) {
+        vector<char>::iterator iter=rs.begin();
+        for(;iter!=rs.end();iter++){
+            printf("%c", *iter);
+        }
+        printf("\n");
+        return;
+    }
+    if (*str == '\0') {
+        return;
+    }
+    rs.push_back(*str);
+    //情况1
+    combination(str+1, subLength-1, rs);
+    rs.pop_back();
+    //情况2
+    combination(str+1, subLength, rs);
+}
+void combination(char *str){
+    if (str == nullptr) {
+        return;
+    }
+    int length = (int)strlen(str);
+    std::vector<char> rs;
+    for(int i = 1; i <= length; ++i)
+        combination(str, i, rs);
+}
+
+#pragma mark 使正方形3组相对的面的顶点和相等
+void printMyArray(int *square, int length){
+    for(int i = 0; i < length; i++)
+        printf("%d ", square[i]);
+    printf("\n");
+}
+
+bool myEqual(int *square, int length){
+    return (square[0]+square[1]+square[2]+square[3] ==          square[4]+square[5]+square[6]+square[7]) && (square[0]+square[3]+square[4]+square[7] == square[1]+square[2]+square[5]+square[6]) && (square[2]+square[3]+square[6]+square[7] == square[0]+square[1]+square[4]+square[5]);
+}
+
+bool squarePlanEquelCore(int *square, int *square1, int index, int length){
+    if (index == length) {
+        if(myEqual(square, length)){
+            printMyArray(square, length);
+            return true;
+        }
+    }else{
+        for(int cur = index; cur < length; cur++){
+            int temp = square1[cur];
+            square1[cur] = square1[index];
+            square1[index] = temp;
+            squarePlanEquelCore(square, square1, ++index, length);
+            --index;
+            temp = square1[cur];
+            square1[cur] = square1[index];
+            square1[index] = temp;
+        }
+    }
+    return false;
+}
+bool squarePlanEqual(int *square, int length){
+    if (square == nullptr) {
+        return false;
+    }
+    int index = 0;
+    return squarePlanEquelCore(square, square, index, length);
+}
+
+#pragma mark 国际象棋皇后问题
+bool check(int **Chesshold, int length, int row, int col){
+    if(row == 0) return true;
+    //每列只能放一个皇后
+    for(int i = 0; i != row; ++i){
+        if(Chesshold[i][col] == 1)
+            return false;
+    }
+    //每行只能放一个皇后
+    for(int j = 0; j != col; ++j){
+        if (Chesshold[row][j] == 1)
+            return false;
+    }
+    //左上角
+    for(int i = row-1, j = col-1; i>=0&&j>=0; --i, --j){
+        if (Chesshold[i][j] == 1) {
+            return false;
+        }
+    }
+    //右上角
+    for(int i = row-1, j = col+1; i>=0&&j!=length; --i, ++j){
+        if (Chesshold[i][j] == 1) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static int myCount = 0;
+void printChesshold(int **Chesshold, int length){
+    printf("%d\n", ++myCount); 
+}
+
+void solve(int **Chesshold, int length, int row){
+    int col = 0;
+    for (; col != length; ++col) {
+        Chesshold[row][col] = 1;
+        if (check(Chesshold, length, row, col)) {
+            if (row == length-1) {
+                printChesshold(Chesshold, length);
+                printf("\n");
+            }else{
+                solve(Chesshold, length, (row+1));
+            }
+        }
+        Chesshold[row][col] = 0;
+    }
+}
+
+void nqueen(int **Chesshold, int length){
+    if (Chesshold == nullptr) {
+        return;
+    }
+    int row = 0;
+    solve(Chesshold, length, row);
+}
+
 
 #pragma mark - 21 调整数组使奇数位于偶数前面
 #pragma mark 时间复杂度O(n)，空间复杂度O(1)
@@ -1863,6 +2007,9 @@ void stackWitMinTest();
 void isPopOrderTest();
 void complexListCopyTest();
 void printAllStrTest();
+void printAllStr1Test();
+void squarePlanEqualTest();
+void nqueenTest();
 
 #pragma mark - main
 int main(int argc, const char * argv[]) {
@@ -2153,6 +2300,12 @@ int main(int argc, const char * argv[]) {
         complexListCopyTest();
         
         printAllStrTest();
+        
+        printAllStr1Test();
+        
+        squarePlanEqualTest();
+        
+        nqueenTest();
     }
     
     return 0;
@@ -2520,4 +2673,32 @@ void complexListCopyTest(){
 void printAllStrTest(){
     char str1[] = "abcd";
     printAllStr(str1);
+}
+
+
+void printAllStr1Test(){
+    char str[4] = "abc";
+    combination(str);
+}
+
+void squarePlanEqualTest(){
+    int square[8] = {2,4,6,8,1,3,5,7};
+    squarePlanEqual(square, 8);
+}
+
+
+void nqueenTest(){
+    const int N = 14;
+    int **rows = new int*[N];
+    for(int i = 0; i < N; ++i){
+        rows[i] = new int[N];
+        for(int j = 0; j < N; ++j)
+        {
+            rows[i][j] = 0;
+        }
+    }
+    nqueen(rows, N);
+    for(int i = 0; i < N; ++i)
+        delete [] (int *)rows[i];
+    delete [] rows;
 }
