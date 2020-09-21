@@ -6,8 +6,9 @@
 //  Copyright © 2020 sjuinan. All rights reserved.
 //
 
+#pragma mark - 题目列表
 /*
- 把这66道题，信手捏来
+ 把这66道题，了如指掌
  01.数组中重复的数字(在正整数数组中，查找唯一一个重复的元素，至少用3种解法)
  02.二维数组中查找(1.首先二维数组是有序的 2.从右上角开始比较)
  03.字符串空格替换(1.先计算出所有的空格 2.初始化一个对应长度的字符串 3.从后向前替换)
@@ -58,6 +59,24 @@
  48.最长不含重复字符的子字符串
  49.丑叔
  50.第一个只出现一次的字符
+ 51.数组中的逆序对
+ 52.连个链表的第一个公共节点
+ 53.在排序数组中查找数字
+ 54.二叉搜索树的第K大节点
+ 55.二叉树的深度
+ 56.数组中数字出现的次数
+ 57.和为s的数字
+ 58.反转字符串
+ 59.队列的最大值
+ 60.n个骰子的点数
+ 61.扑克牌中的顺子
+ 62.圆圈中最后剩下的数字
+ 63.股票的最大利润
+ 64.求1+2+3+...+n
+ 65.不用加减乘除做加法
+ 66.构建乘积数组
+ 67.把字符串转换为数字
+ 68.树中两个节点的最低公共祖先
  */
 
 #import <Foundation/Foundation.h>
@@ -1988,6 +2007,81 @@ bool isPopOrder(const int *push, const int *pop, int length){
     return false;
 }
 
+#pragma mark - 数组中出现次数超过一半的数字
+/*
+ 题目分析：既然是超过一半那么数组的length必须为奇数
+ 题目解析：
+ 方法一：
+ 1.排序
+ 2.找出中位数
+ 方法二：
+ 遍历数组，如果相等count++，不想等--，
+ */
+
+int myRandom(int start, int end){
+    return rand()%(end-start+1)+start;
+}
+
+int myPartition(int *data, int length, int start, int end){
+    int index = myRandom(start, end);
+    swap(data[index], data[end]);
+    int small = start-1;    
+    for(int index = start; index < length; index++){
+        if (data[index] < data[end]) {
+            small++;
+            if (small != index) {
+                swap(data[index], data[small]);
+            }
+        }
+    }
+    small++;
+    swap(data[small], data[end]);
+    return small;
+}
+
+void myQuickSort(int *data, int length, int start, int end){
+    if (data == NULL || length < 0) {
+        return;
+    }
+    if (start > end) {
+        return;
+    }
+    int index = myPartition(data, length, start, end);
+    if (index > start) {
+        myQuickSort(data, length, start, index-1);
+    }
+    if (index < end) {
+        myQuickSort(data, length, index+1, end);
+    }
+}
+
+void getTheMoreThenHalfNumber(int *data, int length){
+    if (data == NULL || length < 0) {
+        return;
+    }
+    myQuickSort(data, length, 0, length-1);
+    printf("getTheMoreThenHalfNumber is %d \n", data[(int)floor((length-0)/2)]);
+}
+
+void getTheMoreThanHalfNumber2(int *data, int length){
+    if (data == NULL || length < 0) {
+        return;
+    }
+    int cur = data[0];
+    unsigned int count = 1;
+    for(int i = 1; i < length; ++i){
+        if (cur == data[i]) {
+            count++;
+        }else{
+            count--;
+            if (count == 0) {
+                cur = data[i];
+                count = 1;
+            }
+        }
+    }
+    printf("getTheMoreThanHalfNumber2  %d \n", count>0?cur:-1);
+}
 
 #pragma mark - Test
 void FindKthToTailTest();
@@ -2010,6 +2104,8 @@ void printAllStrTest();
 void printAllStr1Test();
 void squarePlanEqualTest();
 void nqueenTest();
+
+void getTheMoreThanHalfNumber2Test();
 
 #pragma mark - main
 int main(int argc, const char * argv[]) {
@@ -2306,6 +2402,8 @@ int main(int argc, const char * argv[]) {
         squarePlanEqualTest();
         
         nqueenTest();
+        
+        getTheMoreThanHalfNumber2Test();
     }
     
     return 0;
@@ -2688,7 +2786,7 @@ void squarePlanEqualTest(){
 
 
 void nqueenTest(){
-    const int N = 14;
+    const int N = 8;
     int **rows = new int*[N];
     for(int i = 0; i < N; ++i){
         rows[i] = new int[N];
@@ -2701,4 +2799,10 @@ void nqueenTest(){
     for(int i = 0; i < N; ++i)
         delete [] (int *)rows[i];
     delete [] rows;
+}
+
+void getTheMoreThanHalfNumber2Test(){
+    int data[9] = {2,3,4,5,2,2,2,2,4};
+    getTheMoreThanHalfNumber2(data, 8);
+    getTheMoreThenHalfNumber(data, 8);
 }
