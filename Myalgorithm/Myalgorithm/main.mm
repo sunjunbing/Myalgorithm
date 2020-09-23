@@ -88,11 +88,13 @@
 #include <exception>
 #include <list>
 #include <map>
+#include <unordered_map>
 #include <stack>
 #include <exception>
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <functional>
 
 using namespace std;
 
@@ -2025,7 +2027,7 @@ int myRandom(int start, int end){
 int myPartition(int *data, int length, int start, int end){
     int index = myRandom(start, end);
     swap(data[index], data[end]);
-    int small = start-1;    
+    int small = start-1;
     for(int index = start; index < length; index++){
         if (data[index] < data[end]) {
             small++;
@@ -2083,6 +2085,91 @@ void getTheMoreThanHalfNumber2(int *data, int length){
     printf("getTheMoreThanHalfNumber2  %d \n", count>0?cur:-1);
 }
 
+#pragma mark - 40 最小的k个数
+/*
+ 堆排序
+ */
+
+struct Node{
+    int x,y;
+    Node(int a = 0,int b = 0): x(a), y(b){};
+};
+bool operator> (Node a, Node b){
+    if (a.x == b.x) {
+        return a.y > b.y;
+    }
+    return a.x > b.x;
+}
+
+vector<Node> getTheKNumber(vector<Node> &data, int k){
+    vector<Node> res;
+    if (data.size() <= 0) {
+        return res;
+    }
+    //使用优先级队列，启底层试用对来实现的
+    //大顶堆
+    priority_queue<Node, vector<Node>, greater<Node>> kths;
+    for(int i = 0; i < k; ++i){
+        kths.push(data[i]);
+    }
+    for(int i = k; i < data.size(); ++i){
+        if (data[i] > kths.top()) {
+            kths.pop();
+            kths.push(data[i]);
+        }
+    }
+    for(int i = 0; i<k; ++i){
+        res.push_back(kths.top());
+        kths.pop();
+    }
+    
+    return  res;
+}
+
+#pragma mark - 41 数据流中的中位数，思路同上利用推排序
+/*
+ 细节讨论：
+ 1.首先要保证的是数据要平均分配max.size()-min.size()<=1
+ 2.当 (min.size()+max.size())&1==0时，将数据放入min中，否则放入max中
+ */
+template<typename T> class dynamicArray{
+public:
+    void insert(T num){
+        if (((min.size()+max.size())&1)==0) {//偶数个
+            if (max.size()>0&&num<max.top()) {
+                max.push(num);
+                num = max.top();
+                max.pop();
+            }
+            min.push(num);
+        }else{
+            if (min.size()>0&&num>min.top()) {
+                min.push(num);
+                num = min.top();
+                min.pop();
+            }
+            max.push(num);
+        }
+    }
+    
+    T getMedia(){
+        int size = min.size()+max.size();
+        if (size == 0) {
+            @throw [NSException exceptionWithName:@"nil" reason:@"number is invalid" userInfo:nil];
+        }
+        T media = 0.0;
+        if ((size&1) == 1) {
+            media = min.top();
+        }else{
+            media = (min.top()+max.top())/2;
+        }
+        return media;
+    }
+private:
+    priority_queue<T, vector<T>, greater<T>> min;
+    priority_queue<T, vector<T>, less<T>> max;
+};
+
 #pragma mark - Test
 void FindKthToTailTest();
 void middleOfListTest();
@@ -2104,8 +2191,9 @@ void printAllStrTest();
 void printAllStr1Test();
 void squarePlanEqualTest();
 void nqueenTest();
-
 void getTheMoreThanHalfNumber2Test();
+void getTheKNumberTest();
+void getMediaTest();
 
 #pragma mark - main
 int main(int argc, const char * argv[]) {
@@ -2404,6 +2492,10 @@ int main(int argc, const char * argv[]) {
         nqueenTest();
         
         getTheMoreThanHalfNumber2Test();
+        
+        getTheKNumberTest();
+        
+        getMediaTest();
     }
     
     return 0;
@@ -2805,4 +2897,47 @@ void getTheMoreThanHalfNumber2Test(){
     int data[9] = {2,3,4,5,2,2,2,2,4};
     getTheMoreThanHalfNumber2(data, 8);
     getTheMoreThenHalfNumber(data, 8);
+}
+
+void getTheKNumberTest(){
+    vector<Node> data;
+    for(int i = 0; i < 100; i++){
+        Node node;
+        node.x = myRandom(1, 100); node.y = myRandom(1, 100);
+        data.push_back(node);
+    }
+    vector<Node> cur = getTheKNumber(data, 5);
+    vector<Node>::iterator ite = cur.begin();
+    for(;ite != cur.end(); ite++){
+        printf("%d ", (*ite).x);
+    }
+    printf("\n");
+}
+
+void getMediaTest(){
+    dynamicArray<double> numbsers;
+//    try {
+//        numbsers.getMedia();
+//        printf("FAILED. \n");
+//    } catch (const exception&) {
+//        printf("Passed.\n");
+//    }
+    numbsers.insert(5);
+    printf("median %.2f \n", numbsers.getMedia());
+    numbsers.insert(2);
+    printf("median %.2f \n", numbsers.getMedia());
+    numbsers.insert(3);
+    printf("median %.2f \n", numbsers.getMedia());
+    numbsers.insert(4);
+    printf("median %.2f \n", numbsers.getMedia());
+    numbsers.insert(1);
+    printf("median %.2f \n", numbsers.getMedia());
+    numbsers.insert(6);
+    printf("median %.2f \n", numbsers.getMedia());
+    numbsers.insert(7);
+    printf("median %.2f \n", numbsers.getMedia());
+    numbsers.insert(0);
+    printf("median %.2f \n", numbsers.getMedia());
+    numbsers.insert(8);
+    printf("median %.2f \n", numbsers.getMedia());
 }
