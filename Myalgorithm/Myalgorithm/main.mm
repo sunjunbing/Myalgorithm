@@ -2170,6 +2170,109 @@ private:
     priority_queue<T, vector<T>, less<T>> max;
 };
 
+#pragma mark - 连续子数组的最大和
+/*
+ 动态规划：
+ 状态转移方程
+ 如果题目中前后元素之前强关联、最大、最小问题可以考虑动态规划解法
+ max(dp[i]) = getMax(max(dp[i-1])+arr[i], arr[i]);
+ 并不一定是不包含负数的子数组和最大，也可能是整个数组的和是最大的
+      |- data[i]         i=0||f(i-1)<=0
+ f(i)=|
+      |-f(i-1)+data[i]   i!=0||f(i-1)>0
+ */
+int getMax(int a, int b){
+    return a > b ? a : b;
+}
+int getMaxSumOfArray(int *pData, int nLength){
+    if (pData == NULL || nLength < 0) {
+        return 0;
+    }
+    int Sum = pData[0];
+    int Max = pData[0];
+    for (int i = 0; i < nLength; ++i) {
+        Sum = getMax(Sum + pData[i], pData[i]);
+        if (Sum > Max) {
+            Max = Sum;
+        }
+    }
+    return Max;
+}
+
+#pragma mark - 1~n整数中1的个数
+/*
+ 题目描述:
+ 输入一个整数n，求1～n这n的以十进制表示的数字中，1出现的个数
+ */
+//解法一：普通解法
+int numberOf1Core(int n);
+int numberOf1(int n){
+    int number = 0;
+    for(int i = 0; i <= n; ++i){
+        number += numberOf1Core(i);
+    }
+    return number;
+}
+
+int numberOf1Core(int n){
+    int number = 0;
+    while (n) {
+        if (n%10 == 1) {
+            ++number;
+        }
+        n = n/10;
+    }
+    return number;
+}
+
+int numberOf1Core_1(const char *strN);
+int numberOf1_1(int n){
+    if (n <= 0) {
+        return 0;
+    }
+    char strN[50];
+    sprintf(strN, "%d", n);
+    return numberOf1Core_1(strN);
+}
+
+int PowerBase10(unsigned int n){
+    int result = 1;
+    for(unsigned int i = 0; i < n; ++i){
+        result *= 10;
+    }
+    return result;
+}
+
+int numberOf1Core_1(const char *strN){
+    if (strN == NULL || *strN < '0' || *strN > '9' || *strN == '\0') {
+        return 0;
+    }
+    //convert str to int
+    int first = *strN - '0';
+    unsigned int length = static_cast<int>(strlen(strN));
+    if (length == 1 && first == 0) {
+        return 0;
+    }
+    if (length == 1 && first > 0) {
+        return 1;
+    }
+    
+    //假设strN是"21345"
+    //第一段：最高位1出现的次数=10000～19999=10^4
+    int numFirstDigit = 0;
+    if (first > 1) {
+        numFirstDigit = PowerBase10(length-1);
+    }else if(first == 1){
+        //13245中1出现的次数=最高位1出现的次数=3245+1=2346
+        numFirstDigit = atoi(strN+1)+1;
+    }
+    //第二段：1346～21345中1出现的次数 (1346~11345)+(11346~21345) = 2*(length-1)+10^(length-2)
+    int numOtherDigit = first * (length-1) * PowerBase10(length-2);
+    //第三段：1~1345
+    int numRecursive = numberOf1Core_1(strN+1);
+    return numFirstDigit + numOtherDigit + numRecursive;
+}
+
 #pragma mark - Test
 void FindKthToTailTest();
 void middleOfListTest();
@@ -2194,6 +2297,9 @@ void nqueenTest();
 void getTheMoreThanHalfNumber2Test();
 void getTheKNumberTest();
 void getMediaTest();
+void getMaxSumOfArrayTest();
+void numberOf1Test();
+void numberOf1_1Test();
 
 #pragma mark - main
 int main(int argc, const char * argv[]) {
@@ -2496,6 +2602,12 @@ int main(int argc, const char * argv[]) {
         getTheKNumberTest();
         
         getMediaTest();
+        
+        getMaxSumOfArrayTest();
+        
+        numberOf1Test();
+        
+        numberOf1_1Test();
     }
     
     return 0;
@@ -2940,4 +3052,34 @@ void getMediaTest(){
     printf("median %.2f \n", numbsers.getMedia());
     numbsers.insert(8);
     printf("median %.2f \n", numbsers.getMedia());
+}
+
+void getMaxSumOfArrayTest(){
+    int data[4] = {1, 2, 3, -4};
+    printf("max sum of array %d \n", getMaxSumOfArray(data, 4));
+    int data1[7] = {1, -2, -3, 4, -2, -5, 1};
+    printf("max sum of array %d \n", getMaxSumOfArray(data1, 7));
+}
+
+void numberOf1Test(){
+    printf("number of 1 in n is %d \n", numberOf1(12));
+}
+
+void numberOf1_1Test(){
+    int n = 1;
+    printf("number of 1 in n is %d \n", numberOf1_1(n));
+    int n1 = 5;
+    printf("number of 1 in n is %d \n", numberOf1_1(n1));
+    int n2 = 10;
+    printf("number of 1 in n is %d \n", numberOf1_1(n2));
+    int n3 = 55;
+    printf("number of 1 in n is %d \n", numberOf1_1(n3));
+    int n4 = 99;
+    printf("number of 1 in n is %d \n", numberOf1_1(n4));
+    int n5 = 10000;
+    printf("number of 1 in n is %d \n", numberOf1_1(n5));
+    int n6 = 21345;
+    printf("number of 1 in n is %d \n", numberOf1_1(n6));
+    int n7 = 0;
+    printf("number of 1 in n is %d \n", numberOf1_1(n7));
 }
