@@ -11,6 +11,8 @@ namespace BinaryHeap2
      * 2.当 i > 0 , 其父节点的索引 floor((i - 1) / 2)
      * 3.当 2i + 1 <= n - 1 时，其左子节点的索引为 2i + 1
      * 4.当 2i + 2 <= n - 1 时，其右子节点的索引为 2i + 2
+     * 5.完全二叉树的叶子节点的个数 floor((n+1)/2) celling(n/2)
+     * 6.完全二叉是的非叶子节点的个数 为 floor(n/2)
      */
     class BinaryHeap<E> : Heap<E>
     {
@@ -53,7 +55,7 @@ namespace BinaryHeap2
             nullCheck(element);
             ensureCapacity(Count + 1);
             array[Count++] = element;
-            shiftup(Count-1);
+            shiftUp(Count-1);
         }
 
         public E get()
@@ -62,9 +64,15 @@ namespace BinaryHeap2
             return array[0];
         }
 
-        public E remove(E element)
+        public E remove()
         {
-            return default(E);
+            emptyCheck();
+            E res = array[0];
+            array[0] = array[Count - 1];
+            array[Count - 1] = default(E);
+            Count--;
+            shiftDown(0);
+            return res;
         }
 
         private void emptyCheck()
@@ -96,7 +104,7 @@ namespace BinaryHeap2
             array = elements;
         }
 
-        private void shiftup(int index)
+        private void shiftUp(int index)
         {
             E element = array[index];
             while(index > 0)
@@ -110,6 +118,25 @@ namespace BinaryHeap2
             array[index] = element;
         }
 
+        private void shiftDown(int index)
+        {
+            E element = array[index];
+            while (index < (Count >> 1))//index必须是非叶子节点
+            {
+                int lChildIndex = (index >> 1) + 1;
+                E childElement = array[lChildIndex];
+                int  rChildIndex = lChildIndex + 1;
+                if (rChildIndex < Count && compare(childElement, array[rChildIndex]) < 0)
+                {
+                    childElement = array[rChildIndex];
+                    lChildIndex = rChildIndex;
+                }
+                if (compare(element, childElement) > 0) break;
+                array[index] = childElement;
+                index = lChildIndex;
+            }
+            array[index] = element;
+        }
         public void print()
         {
             emptyCheck();

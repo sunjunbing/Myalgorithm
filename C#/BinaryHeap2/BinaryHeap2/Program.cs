@@ -12,6 +12,9 @@ namespace BinaryHeap2
             heap.add(43);
             heap.add(50);
             heap.add(38);
+            heap.add(10);
+            heap.add(90);
+            heap.add(65);
             heap.print();
         }
     }

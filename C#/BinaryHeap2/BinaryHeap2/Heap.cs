@@ -16,6 +16,6 @@ namespace BinaryHeap2
 
         public E get();
 
-        public E remove(E element);
+        public E remove();
     }
 }
