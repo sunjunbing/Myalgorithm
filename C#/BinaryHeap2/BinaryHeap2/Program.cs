@@ -16,6 +16,9 @@ namespace BinaryHeap2
             heap.add(90);
             heap.add(65);
             heap.print();
+            Console.WriteLine("-------------------");
+            heap.remove();
+            heap.print();
         }
     }
 }

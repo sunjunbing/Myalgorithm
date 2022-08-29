@@ -123,7 +123,7 @@ namespace BinaryHeap2
             E element = array[index];
             while (index < (Count >> 1))//index必须是非叶子节点
             {
-                int lChildIndex = (index >> 1) + 1;
+                int lChildIndex = (index << 1) + 1;
                 E childElement = array[lChildIndex];
                 int  rChildIndex = lChildIndex + 1;
                 if (rChildIndex < Count && compare(childElement, array[rChildIndex]) < 0)
