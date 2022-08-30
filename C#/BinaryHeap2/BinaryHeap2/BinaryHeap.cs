@@ -13,6 +13,8 @@ namespace BinaryHeap2
      * 4.当 2i + 2 <= n - 1 时，其右子节点的索引为 2i + 2
      * 5.完全二叉树的叶子节点的个数 floor((n+1)/2) celling(n/2)
      * 6.完全二叉是的非叶子节点的个数 为 floor(n/2)
+     * 7.最后一个非叶子节点的索引为 (index >> 1) - 1
+     * 8.第一个叶子节点的索引为 index >> 1
      */
     class BinaryHeap<E> : Heap<E>
     {
@@ -21,15 +23,39 @@ namespace BinaryHeap2
         private static int CAPACITY = 10;
         private Func<E, E, int> Comparator;
 
-        public BinaryHeap() : this(null)
+        public BinaryHeap(E[] elements, Func<E, E, int> Comparactor)
+        {
+            this.Comparator = Comparactor;
+            if (elements == null || elements.Length == 0)
+            {
+                array = new E[CAPACITY];
+            }
+            else
+            {
+                Count = elements.Length;
+                int capacity = Math.Max(elements.Length, CAPACITY);
+                array = new E[capacity];
+                for(int i = 0; i < elements.Length; i++)
+                {
+                    array[i] = elements[i];
+                }
+                heapify();
+            }
+        }
+
+        public BinaryHeap(E[] elements) : this(elements, null)
         {
 
         }
 
-        public BinaryHeap(Func<E, E, int> Comparator)
+        public BinaryHeap() : this(null, null)
         {
-            array =  new E[CAPACITY];
-            this.Comparator = Comparator;
+
+        }
+
+        public BinaryHeap(Func<E, E, int> Comparactor) : this(null, Comparactor)
+        {
+
         } 
 
         public int size()
@@ -73,6 +99,39 @@ namespace BinaryHeap2
             Count--;
             shiftDown(0);
             return res;
+        }
+
+        public E replace(E element)
+        {
+            nullCheck(element);
+            E res = default(E);
+            if(Count == 0)
+            {
+                array[0] = element;
+                Count++;
+            }
+            else
+            {
+                res = array[0];
+                array[0] = element;
+                shiftDown(0);
+            }
+            return res;
+        }
+
+        private void heapify()
+        {
+            //自上而下的上滤
+            //for (int i = 1; i < Count; i++)
+            //{
+            //    shiftUp(i);
+            //}
+
+            //自下而上的下滤
+            for (int i = (Count >> 1) - 1; i >= 0; i--)
+            {
+                shiftDown(i);
+            }
         }
 
         private void emptyCheck()
@@ -131,7 +190,7 @@ namespace BinaryHeap2
                     childElement = array[rChildIndex];
                     lChildIndex = rChildIndex;
                 }
-                if (compare(element, childElement) > 0) break;
+                if (compare(element, childElement) >= 0) break;
                 array[index] = childElement;
                 index = lChildIndex;
             }
