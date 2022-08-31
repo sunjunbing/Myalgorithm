@@ -4,15 +4,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BinaryHeap2;
 
 namespace Graph
 {
     public class ListGraph<V, E> : Graph<V, E>
     {
+        public ListGraph() { }
+        public ListGraph(WeightManager<E> weightManager) : base(weightManager)
+        {
+            
+        }
         
         Dictionary<V, Vertex<V, E>> vertices =  new Dictionary<V, Vertex<V, E>>();
         HashSet<Edge<V, E>> edges = new HashSet<Edge<V, E>>();
-        
+
         public void print()
         {
 
@@ -38,27 +44,27 @@ namespace Graph
             }
         }
 
-        public int VertexSize()
+        public override int VertexSize()
         {
             return vertices.Count;
         }
-        public int EdgeSize()
+        public override int EdgeSize()
         {
             return edges.Count;
         }
-        public void AddVertex(V value)
+        public override void AddVertex(V value)
         {
             if (!vertices.ContainsKey(value))
             {
                 vertices.Add(value, new Vertex<V, E>(value));
             }
         }
-        public void AddEdge(V start, V end)
+        public override void AddEdge(V start, V end)
         {
             AddEdge(start, end, null);
         }
 
-        public void AddEdge(V start, V end, object? weight)
+        public override void AddEdge(V start, V end, object? weight)
         {
             Vertex<V, E> VertexStart = null;
             vertices.TryGetValue(start, out VertexStart);
@@ -86,7 +92,7 @@ namespace Graph
             VertexEnd.inEdges.Add(edge);
         }
 
-        public void RemoveVertex(V value)
+        public override void RemoveVertex(V value)
         {
             Vertex<V, E> vertex = null;
             vertices.Remove(value, out vertex);
@@ -108,7 +114,7 @@ namespace Graph
             vertex.inEdges.Clear();
         }
  
-        public void RemoveEdge(V start, V end)
+        public override void RemoveEdge(V start, V end)
         {
             Vertex<V, E> startVertex = null;
             vertices.TryGetValue(start, out startVertex);
@@ -124,7 +130,7 @@ namespace Graph
             }
         }
 
-        public void BFS(V start)
+        public override void BFS(V start)
         {
             Vertex<V, E> vertex = null;
             vertices.TryGetValue(start, out vertex);
@@ -146,7 +152,7 @@ namespace Graph
             }
         }
 
-        public void DFS(V start)
+        public override void DFS(V start)
         {
             HashSet<Vertex<V, E>> set = new HashSet<Vertex<V, E>>();
             DFS(start, set);
@@ -232,6 +238,36 @@ namespace Graph
             return list;
         }
 
+        public override HashSet<EdgeInfo<V, E>> mst()
+        {
+            return prim();
+        }
+
+        public HashSet<EdgeInfo<V, E>> prim()
+        {
+            //遍历获取所有的顶点
+            var enu = vertices.Values.GetEnumerator();
+            if (!enu.MoveNext()) return default;
+            Vertex<V, E> vertex = enu.Current;
+            //返回值
+            HashSet<EdgeInfo<V, E>> res = new HashSet<EdgeInfo<V, E>>();
+            //避免重复
+            HashSet<Vertex<V, E>> addedVertexs = new HashSet<Vertex<V, E>>();
+            //利用小顶堆获取最小值
+            BinaryHeap<Edge<V, E>> minHeap = new BinaryHeap<Edge<V, E>>(vertex.outEdges, (Edge<V,E> e1, Edge<V, E> e2) => weightManager.compare(e1.weight, e2.weight));
+            addedVertexs.Add(vertex);
+            int verticesSize = vertices.Count;
+            while (!minHeap.isEmpty() && addedVertexs.Count < verticesSize)
+            {
+                Edge<V, E> top = minHeap.remove();
+                if (addedVertexs.Contains(top.end)) continue;
+                res.Add(top.info());
+                addedVertexs.Add(top.end);
+                minHeap.addAll(top.end.outEdges);
+            }
+            return res;
+        }
+
         private class Vertex<V, E>
         {
             public V value;
@@ -267,6 +303,11 @@ namespace Graph
             {
                 this.start = start;
                 this.end = end;
+            }
+
+            public EdgeInfo<V, E> info()
+            {
+                return new EdgeInfo<V, E>(start.value, end.value, weight);
             }
 
             public override bool Equals(object? obj)
