@@ -89,6 +89,7 @@ namespace Graph
             }
             VertexStart.outEdges.Add(edge);
             VertexEnd.inEdges.Add(edge);
+            edges.Add(edge);
         }
 
         public override void RemoveVertex(V value)
@@ -239,10 +240,10 @@ namespace Graph
 
         public override HashSet<EdgeInfo<V, E>> mst()
         {
-            return prim();
+            return kruskal();
         }
 
-        public HashSet<EdgeInfo<V, E>> prim()
+        private HashSet<EdgeInfo<V, E>> prim()
         {
             //遍历获取所有的顶点
             var enu = vertices.Values.GetEnumerator();
@@ -265,6 +266,27 @@ namespace Graph
                 minHeap.addAll(top.end.outEdges);
             }
             return res;
+        }
+
+        private HashSet<EdgeInfo<V, E>> kruskal()
+        {
+            int edgeSize = vertices.Count - 1;
+            if (edgeSize == -1) return null;
+            HashSet<EdgeInfo<V, E>> edgeInfo = new HashSet<EdgeInfo<V, E>>();
+            BinaryHeap<Edge<V, E>> minHeap = new BinaryHeap<Edge<V, E>>(edges, (Edge<V, E> e1, Edge<V, E> e2) => weightManager.compare(e1.weight, e2.weight));
+            UnionFind<Vertex<V, E>> uf = new UnionFind<Vertex<V, E>>();
+            foreach(var vertex in vertices.Values)
+            {
+                uf.makeSet(vertex);
+            }
+            while (!minHeap.isEmpty() && edgeInfo.Count < edgeSize)
+            {
+                Edge<V, E> edge = minHeap.remove();
+                if (uf.isSampe(edge.start, edge.end)) continue;
+                edgeInfo.Add(edge.info());
+                uf.union(edge.start, edge.end);
+            }
+            return edgeInfo;
         }
 
         private class Vertex<V, E>
