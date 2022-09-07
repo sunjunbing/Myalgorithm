@@ -243,6 +243,7 @@ namespace Graph
             return kruskal();
         }
 
+
         private HashSet<EdgeInfo<V, E>> prim()
         {
             //遍历获取所有的顶点
