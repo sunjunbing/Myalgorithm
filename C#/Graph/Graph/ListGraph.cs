@@ -290,6 +290,64 @@ namespace Graph
             return edgeInfo;
         }
 
+        public override Dictionary<V, E> shortestPath(V origin)
+        {
+            //从顶点中找到对应的顶点
+            Vertex<V, E> start = null;
+            vertices.TryGetValue(origin,out start);
+            if (start == null) return null;
+
+            //用来放置所有的顶点
+            var paths = new Dictionary<Vertex<V, E>, E>();
+            //用来存放返回值
+            var selectedPath = new Dictionary<V, E>();
+
+            //将接下来可能被提起来的顶点放入到集合中
+            foreach(Edge<V, E> edge in start.outEdges)
+            {
+                paths[edge.end] = edge.weight;
+            }
+
+            while(paths.Count != 0)
+            {
+                //找到接下来第一个被提起来的顶点
+                DictionaryEntry minEntry = minPath(paths);
+                Vertex <V, E> next = (Vertex<V, E>)minEntry.Key;   
+                E weight = (E)minEntry.Value;
+                selectedPath.Add(next.value, weight);
+                paths.Remove(next);
+                foreach (Edge<V, E> edge in next.outEdges)
+                {
+                    if (selectedPath.ContainsKey(edge.end.value) || edge.end.Equals(start)) continue;
+                    //松弛算法
+                    E oldWeight = default(E);
+                    paths.TryGetValue(edge.end, out oldWeight);
+                    var newWeight = weightManager.add(weight, edge.weight);
+                    if (oldWeight.Equals(default(E)) != null || weightManager.compare(newWeight, oldWeight) < 0)
+                    {
+                        paths[edge.end] = newWeight;
+                    }
+                }
+            }
+            return selectedPath;
+        }
+
+        private DictionaryEntry minPath(Dictionary<Vertex<V, E>, E> paths)
+        {
+            //通过迭代器找到最短的哪一个路径
+            DictionaryEntry res = new DictionaryEntry();
+            Dictionary<Vertex<V, E>, E>.Enumerator it = paths.GetEnumerator();
+            while (it.MoveNext())
+            {
+                if(res.Key == null || weightManager.compare(it.Current.Value, (E)res.Value) < 0)
+                { 
+                    res.Key = it.Current.Key;
+                    res.Value = it.Current.Value;
+                }
+            }
+            return res;
+        }
+
         private class Vertex<V, E>
         {
             public V value;

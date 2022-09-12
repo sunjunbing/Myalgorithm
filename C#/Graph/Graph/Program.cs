@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 Console.WriteLine("Hello world");
 
@@ -59,6 +60,19 @@ foreach(Graph.Graph<string, int>.EdgeInfo<string, int> info in set)
     Console.WriteLine(info);
 }
 
+
+Graph.ListGraph<string, int> gp3 = new Graph.ListGraph<string, int>(new SubWeightManager());
+gp3.AddEdge("A", "B", 10); gp3.AddEdge("A", "D", 30); gp3.AddEdge("A", "E", 100);
+gp3.AddEdge("B", "C", 50);
+gp3.AddEdge("C", "E", 10);
+gp3.AddEdge("D", "C", 20); gp3.AddEdge("D", "E", 60);
+
+Dictionary<string, int> res = gp3.shortestPath("A");
+Dictionary<string, int>.Enumerator it = res.GetEnumerator();
+while (it.MoveNext())
+{
+    Console.WriteLine($" {it.Current.Key} = {it.Current.Value}");
+}
 
 //现在类型已经定了
 class SubWeightManager : Graph.Graph<string, int>.WeightManager<int>

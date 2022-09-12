@@ -23,7 +23,18 @@ namespace Graph
         public abstract void RemoveEdge(V start, V end);
         public abstract void BFS(V start);
         public abstract void DFS(V start);
+
+        /*
+         * 最小生成树
+         * 就是根据权值最小的边，将图中所有的顶点连接起来
+         */
         public abstract HashSet<EdgeInfo<V, E>> mst();
+
+        /*
+         * 单源最短路径，从一个点出发找到最短路径
+         */
+        public abstract Dictionary<V, E> shortestPath(V origin);
+
 
         public interface WeightManager<E>
         {
