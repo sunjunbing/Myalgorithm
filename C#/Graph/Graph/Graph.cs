@@ -33,13 +33,34 @@ namespace Graph
         /*
          * 单源最短路径，从一个点出发找到最短路径
          */
-        public abstract Dictionary<V, E> shortestPath(V origin);
+        public abstract Dictionary<V, PathInfo<V, E>> ShortestPath(V origin);
 
 
         public interface WeightManager<E>
         {
             int compare(E e1, E e2);
             E add(E e1, E e2);
+            E zero();
+        }
+
+
+        public class PathInfo<V, E>
+        {
+            public E weight;
+            public LinkedList<EdgeInfo<V, E>> edges = new LinkedList<EdgeInfo<V, E>>();
+
+            public override string ToString()
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append(this.weight.ToString());
+                sb.Append(' ');
+                foreach(var item in edges)
+                {
+                    sb.Append(item.ToString());
+                    sb.Append(' ');
+                }
+                return sb.ToString();
+            }
         }
 
         public class EdgeInfo<V, E>
