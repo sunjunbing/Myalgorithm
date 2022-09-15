@@ -74,6 +74,20 @@ while (it.MoveNext())
     Console.WriteLine($" {it.Current.Key} = {it.Current.Value}");
 }
 
+Dictionary<string, Dictionary<string, Graph.Graph<string, int>.PathInfo<string, int>>> paths = gp3.ShortestPath();
+Dictionary<string, Dictionary<string, Graph.Graph<string, int>.PathInfo<string, int>>>.Enumerator pathIt = paths.GetEnumerator();
+while (pathIt.MoveNext())
+{
+    Console.WriteLine($" {pathIt.Current.Key} ----------------------------------");
+    Dictionary<string, Graph.Graph<string, int>.PathInfo<string, int>>.Enumerator itt = pathIt.Current.Value.GetEnumerator();
+    while (itt.MoveNext())
+    {
+        Console.WriteLine($" {itt.Current.Key} {itt.Current.Value}");
+    }
+
+}
+
+
 Graph.ListGraph<int, int> gp4 = new Graph.ListGraph<int, int>(new SubWeightManager1());
 gp4.AddEdge(0, 1, 1);
 gp4.AddEdge(1, 2, 7); 

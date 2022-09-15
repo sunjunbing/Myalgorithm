@@ -35,6 +35,8 @@ namespace Graph
          */
         public abstract Dictionary<V, PathInfo<V, E>> ShortestPath(V origin);
 
+        public abstract Dictionary<V, Dictionary<V, PathInfo<V, E>>> ShortestPath();
+
 
         public interface WeightManager<E>
         {
@@ -48,6 +50,16 @@ namespace Graph
         {
             public E weight;
             public LinkedList<EdgeInfo<V, E>> edges = new LinkedList<EdgeInfo<V, E>>();
+
+            public PathInfo()
+            {
+
+            }
+
+            public PathInfo(E weight)
+            {
+                this.weight = weight;
+            }
 
             public override string ToString()
             {

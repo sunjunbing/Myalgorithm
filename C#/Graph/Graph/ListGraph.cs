@@ -330,7 +330,7 @@ namespace Graph
 
         public override Dictionary<V, PathInfo<V, E>> ShortestPath(V origin)
         {
-            return bellmanFord(origin);//dijkstr(origin);
+            return dijkstr(origin);// bellmanFord(origin);//dijkstr(origin);
         }
 
         private Dictionary<V, PathInfo<V, E>> dijkstr(V origin)
@@ -342,19 +342,10 @@ namespace Graph
 
             //用来放置所有的顶点
             var paths = new Dictionary<Vertex<V, E>, PathInfo<V, E>>();
+            paths.Add(start, new PathInfo<V, E>(weightManager.zero()));
             //用来存放返回值
             var selectedPath = new Dictionary<V, PathInfo<V, E>>();
 
-            //将接下来可能被提起来的顶点放入到集合中
-            foreach (Edge<V, E> edge in start.outEdges)
-            {
-                PathInfo<V, E> pathInfo = new PathInfo<V, E>();
-                pathInfo.weight = edge.weight;
-                LinkedList<EdgeInfo<V, E>> list = new LinkedList<EdgeInfo<V, E>>();
-                list.AddLast(edge.info());
-                pathInfo.edges = list;
-                paths[edge.end] = pathInfo;
-            }
 
             while (paths.Count != 0)
             {
@@ -416,8 +407,7 @@ namespace Graph
 
             //用来存放返回值
             var selectedPath = new Dictionary<V, PathInfo<V, E>>();
-            PathInfo<V, E> path = new PathInfo<V, E>();
-            path.weight = weightManager.zero();
+            PathInfo<V, E> path = new PathInfo<V, E>(weightManager.zero());
             selectedPath[origin] = path;
 
             //循环次数
@@ -450,6 +440,80 @@ namespace Graph
             }
             selectedPath.Remove(start.value);
             return selectedPath;
+        }
+
+        public override Dictionary<V, Dictionary<V, PathInfo<V, E>>> ShortestPath()
+        {
+            Dictionary<V, Dictionary<V, PathInfo<V, E>>> res = new Dictionary<V, Dictionary<V, Graph<V, E>.PathInfo<V, E>>>();
+
+            //把所有的边都添加进入
+            foreach(Edge<V, E> edge in edges)
+            {
+
+                Dictionary<V, PathInfo<V, E>> value = null;
+                res.TryGetValue(edge.start.value, out value);
+                if (value == null)
+                {
+                    value = new Dictionary<V, PathInfo<V, E>>();
+                    res[edge.start.value] = value;
+                }
+
+                PathInfo<V, E> pathInfo = new PathInfo<V, E>(edge.weight);
+                pathInfo.edges.AddLast(edge.info());
+                value.Add(edge.end.value, pathInfo);
+            }
+
+            foreach(Vertex<V, E> v2 in vertices.Values)
+            {
+                foreach (Vertex<V, E> v1 in vertices.Values)
+                {
+                    foreach (Vertex<V, E> v3 in vertices.Values)
+                    {
+                        if (v1.Equals(v2) || v1.Equals(v3) || v2.Equals(v3)) continue;
+                        //v1 -> v2
+                        PathInfo<V, E> path12 = GetPathInfo(v1, v2, res);
+                        if (path12 == null) continue;
+                        //v2 -> v3
+                        PathInfo<V, E> path23 = GetPathInfo(v2, v3, res);
+                        if(path23 == null) continue;
+                        //v1 -> v3
+                        PathInfo<V, E> path13 = GetPathInfo(v1, v3, res);
+
+                        E newWeight = weightManager.add(path12.weight, path23.weight);
+                        if (path13 != null && weightManager.compare(newWeight, path13.weight) >= 0) continue;
+
+                        if(path13 == null)
+                        {
+                            path13 = new PathInfo<V, E>();
+                            res[v1.value][v3.value] = path13;
+                        }
+                        else
+                        {
+                            path13.edges.Clear();
+                        }
+                        path13.weight = newWeight;
+                        foreach(var path in path12.edges)
+                        {
+                            path13.edges.AddLast(path);
+                        }
+                        foreach (var path in path23.edges)
+                        {
+                            path13.edges.AddLast(path);
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+
+        private PathInfo<V, E> GetPathInfo(Vertex<V, E> from, Vertex<V, E> to, Dictionary<V, Dictionary<V, PathInfo<V, E>>> paths)
+        {
+            Dictionary<V, PathInfo<V, E>> value = null;
+            paths.TryGetValue(from.value, out value);
+            if (value == null) return null;
+            PathInfo<V, E> path = null;
+            value.TryGetValue(to.value, out path);
+            return  path;
         }
 
         private class Vertex<V, E>
