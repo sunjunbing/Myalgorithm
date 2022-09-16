@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32407.343
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "digui", "digui\digui.csproj", "{5A014D49-552B-486E-B68C-A6F6E7D7F636}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5A014D49-552B-486E-B68C-A6F6E7D7F636}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A014D49-552B-486E-B68C-A6F6E7D7F636}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A014D49-552B-486E-B68C-A6F6E7D7F636}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A014D49-552B-486E-B68C-A6F6E7D7F636}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5982743F-86BF-4C24-AC33-A2D882D3BBF6}
+	EndGlobalSection
+EndGlobal
