@@ -67,12 +67,42 @@ gp3.AddEdge("B", "C", 50);
 gp3.AddEdge("C", "E", 10);
 gp3.AddEdge("D", "C", 20); gp3.AddEdge("D", "E", 60);
 
-Dictionary<string, int> res = gp3.shortestPath("A");
-Dictionary<string, int>.Enumerator it = res.GetEnumerator();
+Dictionary<string, Graph.Graph<string, int>.PathInfo<string, int>> res = gp3.ShortestPath("A");
+Dictionary<string, Graph.Graph<string, int>.PathInfo<string, int>>.Enumerator it = res.GetEnumerator();
 while (it.MoveNext())
 {
     Console.WriteLine($" {it.Current.Key} = {it.Current.Value}");
 }
+
+Dictionary<string, Dictionary<string, Graph.Graph<string, int>.PathInfo<string, int>>> paths = gp3.ShortestPath();
+Dictionary<string, Dictionary<string, Graph.Graph<string, int>.PathInfo<string, int>>>.Enumerator pathIt = paths.GetEnumerator();
+while (pathIt.MoveNext())
+{
+    Console.WriteLine($" {pathIt.Current.Key} ----------------------------------");
+    Dictionary<string, Graph.Graph<string, int>.PathInfo<string, int>>.Enumerator itt = pathIt.Current.Value.GetEnumerator();
+    while (itt.MoveNext())
+    {
+        Console.WriteLine($" {itt.Current.Key} {itt.Current.Value}");
+    }
+
+}
+
+
+Graph.ListGraph<int, int> gp4 = new Graph.ListGraph<int, int>(new SubWeightManager1());
+gp4.AddEdge(0, 1, 1);
+gp4.AddEdge(1, 2, 7); 
+gp4.AddEdge(1, 0, -2);
+
+Dictionary<int, Graph.Graph<int, int>.PathInfo<int, int>> res1 = gp4.ShortestPath(1);
+if (res1 != null)
+{
+    Dictionary<int, Graph.Graph<int, int>.PathInfo<int, int>>.Enumerator it1 = res1.GetEnumerator();
+    while (it.MoveNext())
+    {
+        Console.WriteLine($" {it.Current.Key} = {it.Current.Value}");
+    }
+}
+
 
 //现在类型已经定了
 class SubWeightManager : Graph.Graph<string, int>.WeightManager<int>
@@ -86,6 +116,30 @@ class SubWeightManager : Graph.Graph<string, int>.WeightManager<int>
     public int add(int e1, int e2)
     {
         return e1 + e2;
+    }
+
+    public int zero()
+    {
+        return 0;
+    }
+}
+
+class SubWeightManager1 : Graph.Graph<int, int>.WeightManager<int>
+{
+    public int compare(int e1, int e2)
+    {
+        //比较器
+        return e1.CompareTo(e2);
+    }
+
+    public int add(int e1, int e2)
+    {
+        return e1 + e2;
+    }
+
+    public int zero()
+    {
+        return 0;
     }
 }
 

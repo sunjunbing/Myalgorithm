@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
+
 
 namespace Graph
 {
@@ -290,62 +286,234 @@ namespace Graph
             return edgeInfo;
         }
 
-        public override Dictionary<V, E> shortestPath(V origin)
-        {
-            //从顶点中找到对应的顶点
-            Vertex<V, E> start = null;
-            vertices.TryGetValue(origin,out start);
-            if (start == null) return null;
-
-            //用来放置所有的顶点
-            var paths = new Dictionary<Vertex<V, E>, E>();
-            //用来存放返回值
-            var selectedPath = new Dictionary<V, E>();
-
-            //将接下来可能被提起来的顶点放入到集合中
-            foreach(Edge<V, E> edge in start.outEdges)
-            {
-                paths[edge.end] = edge.weight;
-            }
-
-            while(paths.Count != 0)
-            {
-                //找到接下来第一个被提起来的顶点
-                DictionaryEntry minEntry = minPath(paths);
-                Vertex <V, E> next = (Vertex<V, E>)minEntry.Key;   
-                E weight = (E)minEntry.Value;
-                selectedPath.Add(next.value, weight);
-                paths.Remove(next);
-                foreach (Edge<V, E> edge in next.outEdges)
-                {
-                    if (selectedPath.ContainsKey(edge.end.value) || edge.end.Equals(start)) continue;
-                    //松弛算法
-                    E oldWeight = default(E);
-                    paths.TryGetValue(edge.end, out oldWeight);
-                    var newWeight = weightManager.add(weight, edge.weight);
-                    if (oldWeight.Equals(default(E)) != null || weightManager.compare(newWeight, oldWeight) < 0)
-                    {
-                        paths[edge.end] = newWeight;
-                    }
-                }
-            }
-            return selectedPath;
-        }
-
-        private DictionaryEntry minPath(Dictionary<Vertex<V, E>, E> paths)
+        private DictionaryEntry minPath(Dictionary<Vertex<V, E>, PathInfo<V,E>> paths)
         {
             //通过迭代器找到最短的哪一个路径
             DictionaryEntry res = new DictionaryEntry();
-            Dictionary<Vertex<V, E>, E>.Enumerator it = paths.GetEnumerator();
+            Dictionary<Vertex<V, E>, PathInfo<V, E>>.Enumerator it = paths.GetEnumerator();
             while (it.MoveNext())
             {
-                if(res.Key == null || weightManager.compare(it.Current.Value, (E)res.Value) < 0)
+                if(res.Key == null || weightManager.compare(it.Current.Value.weight, ((PathInfo<V, E>)res.Value).weight) < 0)
                 { 
                     res.Key = it.Current.Key;
                     res.Value = it.Current.Value;
                 }
             }
             return res;
+        }
+
+        private void relexDijkstra(Edge<V, E> edge, PathInfo<V, E> pathInfo, Dictionary<Vertex<V, E>, PathInfo<V, E>> paths)
+        {
+            //新的权值
+            var newWeight = weightManager.add(pathInfo.weight, edge.weight);
+            //获取可用信息
+            PathInfo<V, E> oldPath = default(PathInfo<V, E>);
+            paths.TryGetValue(edge.end, out oldPath);
+            //如何新的权值比旧权值还要大
+            if (oldPath != null && weightManager.compare(newWeight, oldPath.weight) >= 0) return;
+            if (oldPath == null)
+            {
+                oldPath = new PathInfo<V, E>();
+                paths[edge.end] = oldPath;
+            }
+            else
+            {
+                oldPath.edges.Clear();
+            }
+            foreach (var temp in pathInfo.edges)
+            {
+                oldPath.edges.AddLast(temp);
+            }
+            oldPath.edges.AddLast(edge.info());
+            oldPath.weight = newWeight;
+        }
+
+        public override Dictionary<V, PathInfo<V, E>> ShortestPath(V origin)
+        {
+            return dijkstr(origin);// bellmanFord(origin);//dijkstr(origin);
+        }
+
+        private Dictionary<V, PathInfo<V, E>> dijkstr(V origin)
+        {
+            //从顶点中找到对应的顶点
+            Vertex<V, E> start = null;
+            vertices.TryGetValue(origin, out start);
+            if (start == null) return null;
+
+            //用来放置所有的顶点
+            var paths = new Dictionary<Vertex<V, E>, PathInfo<V, E>>();
+            paths.Add(start, new PathInfo<V, E>(weightManager.zero()));
+            //用来存放返回值
+            var selectedPath = new Dictionary<V, PathInfo<V, E>>();
+
+
+            while (paths.Count != 0)
+            {
+                //找到接下来第一个被提起来的顶点
+                DictionaryEntry minEntry = minPath(paths);
+                Vertex<V, E> next = (Vertex<V, E>)minEntry.Key;
+                PathInfo<V, E> pathInfo = (PathInfo<V, E>)minEntry.Value;
+                //将接下来可能被提起来的点放入到返回集合中
+                selectedPath.Add(next.value, pathInfo);
+                //删除被踢起来的点
+                paths.Remove(next);
+                //计算下一个可能被提起来的点
+                foreach (Edge<V, E> edge in next.outEdges)
+                {
+                    //如何已经包含了这个顶点
+                    if (selectedPath.ContainsKey(edge.end.value)) continue;
+                    relexDijkstra(edge, pathInfo, paths);
+                }
+            }
+            selectedPath.Remove(start.value);
+            return selectedPath;
+        }
+
+
+        private bool relexBellmanFord(Edge<V, E> edge, PathInfo<V, E> fromPath, Dictionary<V, PathInfo<V, E>> paths)
+        {
+            //新的权值
+            var newWeight = weightManager.add(fromPath.weight, edge.weight);
+            //获取可用信息
+            PathInfo<V, E> oldPath = default(PathInfo<V, E>);
+            paths.TryGetValue(edge.end.value, out oldPath);
+            //如何新的权值比旧权值还要大
+            if (oldPath != null && weightManager.compare(newWeight, oldPath.weight) >= 0) return false;
+            if (oldPath == null)
+            {
+                oldPath = new PathInfo<V, E>();
+                paths[edge.end.value] = oldPath;
+            }
+            else
+            {
+                oldPath.edges.Clear();
+            }
+            foreach (var temp in fromPath.edges)
+            {
+                oldPath.edges.AddLast(temp);
+            }
+            oldPath.edges.AddLast(edge.info());
+            oldPath.weight = newWeight;
+
+            return true;
+        }
+
+        private Dictionary<V, PathInfo<V, E>> bellmanFord(V origin)
+        {
+            //从顶点中找到对应的顶点
+            Vertex<V, E> start = null;
+            vertices.TryGetValue(origin, out start);
+            if (start == null) return null;
+
+            //用来存放返回值
+            var selectedPath = new Dictionary<V, PathInfo<V, E>>();
+            PathInfo<V, E> path = new PathInfo<V, E>(weightManager.zero());
+            selectedPath[origin] = path;
+
+            //循环次数
+            int count = vertices.Count - 1;
+            //对所有的边进行n-1次松弛操作
+            for (int i = 0; i < count; i++)
+            {
+                foreach(var edge in edges)
+                {
+                    PathInfo<V, E> pathInfo = null;
+                    selectedPath.TryGetValue(edge.start.value, out pathInfo);
+                    if (pathInfo == null) continue;
+                    relexBellmanFord(edge, pathInfo, selectedPath);
+                }
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                foreach (var edge in edges)
+                {
+                    PathInfo<V, E> pathInfo = null;
+                    selectedPath.TryGetValue(edge.start.value, out pathInfo);
+                    if (pathInfo == null) continue;
+                    if(relexBellmanFord(edge, pathInfo, selectedPath))
+                    {
+                        Console.WriteLine("有负权环");
+                        return null;
+                    }
+                }
+            }
+            selectedPath.Remove(start.value);
+            return selectedPath;
+        }
+
+        public override Dictionary<V, Dictionary<V, PathInfo<V, E>>> ShortestPath()
+        {
+            Dictionary<V, Dictionary<V, PathInfo<V, E>>> res = new Dictionary<V, Dictionary<V, Graph<V, E>.PathInfo<V, E>>>();
+
+            //把所有的边都添加进入
+            foreach(Edge<V, E> edge in edges)
+            {
+
+                Dictionary<V, PathInfo<V, E>> value = null;
+                res.TryGetValue(edge.start.value, out value);
+                if (value == null)
+                {
+                    value = new Dictionary<V, PathInfo<V, E>>();
+                    res[edge.start.value] = value;
+                }
+
+                PathInfo<V, E> pathInfo = new PathInfo<V, E>(edge.weight);
+                pathInfo.edges.AddLast(edge.info());
+                value.Add(edge.end.value, pathInfo);
+            }
+
+            foreach(Vertex<V, E> v2 in vertices.Values)
+            {
+                foreach (Vertex<V, E> v1 in vertices.Values)
+                {
+                    foreach (Vertex<V, E> v3 in vertices.Values)
+                    {
+                        if (v1.Equals(v2) || v1.Equals(v3) || v2.Equals(v3)) continue;
+                        //v1 -> v2
+                        PathInfo<V, E> path12 = GetPathInfo(v1, v2, res);
+                        if (path12 == null) continue;
+                        //v2 -> v3
+                        PathInfo<V, E> path23 = GetPathInfo(v2, v3, res);
+                        if(path23 == null) continue;
+                        //v1 -> v3
+                        PathInfo<V, E> path13 = GetPathInfo(v1, v3, res);
+
+                        E newWeight = weightManager.add(path12.weight, path23.weight);
+                        if (path13 != null && weightManager.compare(newWeight, path13.weight) >= 0) continue;
+
+                        if(path13 == null)
+                        {
+                            path13 = new PathInfo<V, E>();
+                            res[v1.value][v3.value] = path13;
+                        }
+                        else
+                        {
+                            path13.edges.Clear();
+                        }
+                        path13.weight = newWeight;
+                        foreach(var path in path12.edges)
+                        {
+                            path13.edges.AddLast(path);
+                        }
+                        foreach (var path in path23.edges)
+                        {
+                            path13.edges.AddLast(path);
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+
+        private PathInfo<V, E> GetPathInfo(Vertex<V, E> from, Vertex<V, E> to, Dictionary<V, Dictionary<V, PathInfo<V, E>>> paths)
+        {
+            Dictionary<V, PathInfo<V, E>> value = null;
+            paths.TryGetValue(from.value, out value);
+            if (value == null) return null;
+            PathInfo<V, E> path = null;
+            value.TryGetValue(to.value, out path);
+            return  path;
         }
 
         private class Vertex<V, E>
