@@ -41,4 +41,7 @@ digui.Times.cost("func4", () => {
 Console.WriteLine($"---------------------- ");
 
 digui.Hanoi hanoi = new digui.Hanoi();
-hanoi.hanoi(10, "A", "B", "C");
+hanoi.hanoi(3, "A", "B", "C");
+
+digui.Queen quees = new digui.Queen();
+quees.PlaceXQueen(8);
