@@ -6,9 +6,7 @@ using System.Collections.Generic;
 Console.WriteLine("Hello, World!");
 
 digui.FIB fIB = new digui.FIB();
-int n = 40; 
-
-int res = 0;
+int n = 10; 
 digui.Times.cost("Fib", () => {
     Console.Write($"{fIB.Fib(n)}");
 });
@@ -24,3 +22,23 @@ digui.Times.cost("Fib3", () => {
 digui.Times.cost("Fib4", () => {
     Console.Write($"{fIB.Fib4(n)}");
 });
+
+
+digui.ClimbStairs stairs = new digui.ClimbStairs();
+digui.Times.cost("func1", () => {
+    Console.Write($"{stairs.func1(n)}");
+});
+
+digui.Times.cost("func2", () => {
+    Console.Write($"{stairs.func2(n)}");
+});
+
+digui.Times.cost("func4", () => {
+    Console.Write($"{stairs.func4(n)}");
+});
+
+
+Console.WriteLine($"---------------------- ");
+
+digui.Hanoi hanoi = new digui.Hanoi();
+hanoi.hanoi(10, "A", "B", "C");
