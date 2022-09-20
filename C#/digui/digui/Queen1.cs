@@ -8,6 +8,8 @@ namespace digui
 {
     public class Queen1
     {
+        int[] queens;
+
         bool[] cols;
 
         bool[] leftTop;
@@ -20,6 +22,7 @@ namespace digui
         {
             if(n < 1) return;
             cols = new bool[n];
+            queens = new int[n];
             leftTop = new bool[2 * n - 1];
             rightTop = new bool[leftTop.Length];
             place(0);
@@ -40,6 +43,7 @@ namespace digui
                 int rightTopIndex = row + col;
                 if (rightTop[rightTopIndex]) continue;
 
+                queens[row] = col;
                 cols[col] = true;
                 leftTop[leftTopIndex] = true;
                 rightTop[rightTopIndex] = true;
@@ -55,18 +59,22 @@ namespace digui
 
         private void show()
         {
-            //for(int row = 0; row < cols.Length; row++){
-            //    for(int col = 0; col < cols.Length; col++){
-            //        if(cols[row] == col) {
-            //            Console.Write("1 ");
-            //        }else
-            //        {
-            //            Console.Write("0 ");
-            //        }
-            //    }
-            //    Console.WriteLine();
-            //}
-            //Console.WriteLine("--------------------");
+            for (int row = 0; row < cols.Length; row++)
+            {
+                for (int col = 0; col < cols.Length; col++)
+                {
+                    if (queens[row] == col)
+                    {
+                        Console.Write("1 ");
+                    }
+                    else
+                    {
+                        Console.Write("0 ");
+                    }
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine("--------------------");
         }
     }
 }
