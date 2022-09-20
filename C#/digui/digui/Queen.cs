@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace digui
 {
-    //爬楼梯：现有n阶台阶，可以一次走1步，也可以一次走2步，那么一共有多少种方法，
     public class Queen
     {
         int[] cols;

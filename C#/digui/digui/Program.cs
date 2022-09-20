@@ -45,3 +45,6 @@ hanoi.hanoi(3, "A", "B", "C");
 
 digui.Queen quees = new digui.Queen();
 quees.PlaceXQueen(8);
+
+digui.Queen1 quees1 = new digui.Queen1();
+quees1.PlaceXQueen(8);
