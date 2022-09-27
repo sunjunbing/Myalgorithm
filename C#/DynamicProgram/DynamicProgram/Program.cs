@@ -7,9 +7,177 @@ namespace DynamicProgram
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+            //最少的硬币数量
             Console.WriteLine($"{DP2(41)}");
+            //最长上升子序列
             Console.WriteLine($"{LongestSubArray(new int[] { 10, 2, 2, 5, 1, 7, 101, 18 })}");
+            //最长公共子序列
             Console.WriteLine($"{MaxSubArray3(new int[] { 1, 3, 4, 6, 7},new int[] { 1, 4, 5, 6})}");
+            //最长公共子串
+            Console.WriteLine($"MaxSubString {MaxSubString("D", "ABCD")}");
+            //0-1背包问题
+            Console.WriteLine($"最大价值 {SnapsackExactly(new int[] { 6,3,5,4,6}, new int[] { 2,2,6,5,4}, 20)}");
+        }
+
+        /*
+         * 0-1背包问题
+         */
+        static int SnapsackExactly(int[] values, int[] weights, int capacity)
+        {
+            if (values == null || values.Length == 0) return 0;
+            if (weights == null || weights.Length == 0) return 0;
+            if (capacity == 0) return 0;
+            /*
+             * dp[i,j] 重量不超过j的，前i个可选物品的最大价值
+             * 两个情况
+             * i) j > weights[i]时，说明可以选第i件物品
+             *  dp[i, j] = Math.Max(dp[i - 1, j], dp[i - 1, j - weight[i]] + value(i))
+             * ii) j <= weights[i]时，已经没有空间了，不能选
+             *  dp[i, j] = dp[i-1,j]; //总价值相等
+             */
+            int[] dp = new int[capacity + 1];
+            for(int i = 1; i <= capacity; i++)
+            {
+                dp[i] = int.MinValue;
+            }
+            for (int i = 1; i <= weights.Length; i++)
+            {
+                for (int j = capacity; j >= weights[i - 1]; j--)
+                {
+                    dp[j] = Math.Max(dp[j], dp[j - weights[i - 1]] + values[i - 1]);
+                }
+            }
+            return dp[capacity] < 0 ? -1 : dp[capacity];
+        }
+        static int Snapsack2(int[] values, int[] weights, int capacity)
+        {
+            if (values == null || values.Length == 0) return 0;
+            if (weights == null || weights.Length == 0) return 0;
+            if (capacity == 0) return 0;
+            /*
+             * dp[i,j] 重量不超过j的，前i个可选物品的最大价值
+             * 两个情况
+             * i) j > weights[i]时，说明可以选第i件物品
+             *  dp[i, j] = Math.Max(dp[i - 1, j], dp[i - 1, j - weight[i]] + value(i))
+             * ii) j <= weights[i]时，已经没有空间了，不能选
+             *  dp[i, j] = dp[i-1,j]; //总价值相等
+             */
+            int[] dp = new int[capacity + 1];
+            for (int i = 1; i <= weights.Length; i++)
+            {
+                for (int j = capacity; j >= weights[i - 1]; j--)
+                {
+                    dp[j] = Math.Max(dp[j], dp[j - weights[i - 1]] + values[i - 1]);
+                }
+            }
+            return dp[capacity];
+        }
+        static int Snapsack1(int[] values, int[] weights, int capacity)
+        {
+            if (values == null || values.Length == 0) return 0;
+            if (weights == null || weights.Length == 0) return 0;
+            if (capacity == 0) return 0;
+            /*
+             * dp[i,j] 重量不超过j的，前i个可选物品的最大价值
+             * 两个情况
+             * i) j > weights[i]时，说明可以选第i件物品
+             *  dp[i, j] = Math.Max(dp[i - 1, j], dp[i - 1, j - weight[i]] + value(i))
+             * ii) j <= weights[i]时，已经没有空间了，不能选
+             *  dp[i, j] = dp[i-1,j]; //总价值相等
+             */
+            int[] dp = new int[capacity + 1];
+            for (int i = 1; i <= weights.Length; i++)
+            {
+                for (int j = capacity; j >= 1; j--)
+                {
+                    if (j <= weights[i - 1])
+                    {
+                        dp[j] = dp[j];
+                    }
+                    else
+                    {
+                        dp[j] = Math.Max(dp[j], dp[j - weights[i - 1]] + values[i - 1]);
+                    }
+                }
+            }
+            return dp[capacity];
+        }
+        static int Snapsack(int[] values, int[] weights, int capacity)
+        {
+            if (values == null || values.Length == 0) return 0;
+            if (weights == null || weights.Length == 0) return 0;
+            if (capacity == 0) return 0;
+            /*
+             * dp[i,j] 重量不超过j的，前i个可选物品的最大价值
+             * 两个情况
+             * i) j > weights[i]时，说明可以选第i件物品
+             *  dp[i, j] = Math.Max(dp[i - 1, j], dp[i - 1, j - weight[i]] + value(i))
+             * ii) j <= weights[i]时，已经没有空间了，不能选
+             *  dp[i, j] = dp[i-1,j]; //总价值相等
+             */
+            int[,] dp = new int[weights.Length + 1,capacity + 1];
+            for (int i = 1; i <= weights.Length; i++)
+            {
+                for(int j = 1; j <= capacity; j++)
+                {
+                    if(j <= weights[i - 1])
+                    {
+                        dp[i,j] = dp[i - 1,j];
+                    }
+                    else
+                    {
+                        dp[i, j] = Math.Max(dp[i-1,j],dp[i - 1, j - weights[i - 1]] + values[i - 1]);
+                    }
+                }
+            }
+            return dp[weights.Length,capacity];
+        }
+
+        /*
+        * 最长公共字串
+        *1.状态转移方程
+        * str1[i] = str2[j]
+        * dp[i, j] = dp[i-1, j-1] + 1;
+        * str1[i] != str2[j]
+        * dp[i,j] = 0;
+        * 
+        * 2.初始值
+        * dp[0,0] = 0;
+        * 
+        * 3.最终解
+        * dp[i, j]
+        */ 
+        static int MaxSubString(string str1, string str2)
+        {
+            if (str1 == null || str1.Length == 0) return 0;
+            if (str2 == null || str2.Length == 0) return 0;
+            char[] str1Arr = str1.ToCharArray();
+            char[] str2Arr = str2.ToCharArray();
+            return MaxSubString_1(str1Arr, str2Arr);
+        }
+        static int MaxSubString_1(char[] str1Arr, char[] str2Arr)
+        {
+            int[] dp = new int[str2Arr.Length + 1];
+            int max = 0;
+            for(int i = 1; i <= str1Arr.Length; i++)
+            {
+                int cur = 0;
+                for(int j = 1; j <= str2Arr.Length; j++)
+                {
+                    int leftTop = cur;
+                    cur = dp[j];
+                    if (str1Arr[i - 1] == str2Arr[j - 1])
+                    {
+                        dp[j] = leftTop + 1;
+                        max = Math.Max(dp[j], max);
+                    }
+                    else
+                    {
+                        dp[j] = 0;
+                    }
+                }
+            }
+            return max;
         }
 
         /*
