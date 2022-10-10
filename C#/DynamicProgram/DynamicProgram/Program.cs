@@ -8,15 +8,15 @@ namespace DynamicProgram
         {
             Console.WriteLine("Hello World!");
             //最少的硬币数量
-            Console.WriteLine($"{DP2(41)}");
+            Console.WriteLine($"最少的硬币数量 {DP2(41)}");
             //最长上升子序列
-            Console.WriteLine($"{LongestSubArray(new int[] { 10, 2, 2, 5, 1, 7, 101, 18 })}");
+            Console.WriteLine($"最长上升子序列 {LongestSubArray2(new int[] {10, 9, 2, 5, 3, 7, 101, 18})}");
             //最长公共子序列
-            Console.WriteLine($"{MaxSubArray3(new int[] { 1, 3, 4, 6, 7},new int[] { 1, 4, 5, 6})}");
+            Console.WriteLine($"最长公共子序列 {MaxSubArray3(new int[] { 1, 3, 4, 6, 7},new int[] { 1, 4, 5, 6})}");
             //最长公共子串
-            Console.WriteLine($"MaxSubString {MaxSubString("D", "ABCD")}");
+            Console.WriteLine($"最长公共子串 {MaxSubString("D", "ABCD")}");
             //0-1背包问题
-            Console.WriteLine($"最大价值 {SnapsackExactly(new int[] { 6,3,5,4,6}, new int[] { 2,2,6,5,4}, 20)}");
+            Console.WriteLine($"背包最大价值 {SnapsackExactly(new int[] { 6,3,5,4,6}, new int[] { 2,2,6,5,4}, 20)}");
         }
 
         /*
@@ -359,6 +359,7 @@ namespace DynamicProgram
         }
 
 
+        //最长上升子序列
         static int LongestSubArray(int[] nums)
         {
             if (nums == null || nums.Length == 0) return 0;
