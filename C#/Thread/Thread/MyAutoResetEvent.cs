@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Threading;
 
 /*
  * 使用AutoResetEvent类从一个线程向另外一个线程发送通知，

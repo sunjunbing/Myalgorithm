@@ -1,5 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+//Console.WriteLine("Hello, World!");
 
 //MYThread.CreateThread();
 
@@ -31,4 +31,6 @@ Console.WriteLine("Hello, World!");
 
 //MyReaderWriterLock.test();
 
-Concurrent.ConcurrentDictionaryTest();
+//Concurrent.ConcurrentDictionaryTest();
+
+MyAwait.test();
