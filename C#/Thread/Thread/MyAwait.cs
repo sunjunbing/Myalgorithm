@@ -9,60 +9,44 @@ class MyAwait
 {
     public static void test()
     {
-        Task t = AsynchronyWithTPL();
-        t.Wait();
-
-        t = AsynchronyWithAwait();
-        t.Wait();
-
+        callMethod();
         Console.ReadKey();
     }
 
-
-    static Task AsynchronyWithTPL()
+    public static async void callMethod()
     {
-        var containerTask = new Task(() => {
-            Task<string> t = GetInfoAsync("TPL 1");
-            t.ContinueWith(task => {
-                Console.WriteLine(t.Result);
-                Task<string> t2 = GetInfoAsync("TPL 2");
-                t2.ContinueWith(innerTask => Console.WriteLine(innerTask.Result),
-                    TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.AttachedToParent);
-                t2.ContinueWith(innerTask => Console.WriteLine(innerTask.Exception.InnerException),
-                    TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.AttachedToParent);
-            },
-                TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.AttachedToParent);
+        Task<int> task = Method1();
+        Method2();
+        int count = await task;
+        Method3(count);
+    }
 
-            t.ContinueWith(task => Console.WriteLine(t.Exception.InnerException),
-                TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.AttachedToParent);
+    //异步执行，不阻塞主线程
+    public static async Task<int> Method1()
+    {
+        int count = 0;
+        await Task.Run(() =>
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                Console.WriteLine(" Method 1");
+                count += 1;
+            }
         });
-
-        containerTask.Start();
-        return containerTask;
+        return count;
     }
 
-    async static Task AsynchronyWithAwait()
+    public static void Method2()
     {
-        try
+        for (int i = 0; i < 5; i++)
         {
-            string result = await GetInfoAsync("Async 1");
-            Console.WriteLine(result);
-            result = await GetInfoAsync("Async 2");
-            Console.WriteLine(result);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
+            Console.WriteLine(" Method 2");
         }
     }
 
-    async static Task<string> GetInfoAsync(string name)
+    //必须等待第一个任务完成后，才能执行
+    public static void Method3(int count)
     {
-        Console.WriteLine("Task {0} started!", name);
-        await Task.Delay(TimeSpan.FromSeconds(2));
-        if (name == "TPL 2")
-            throw new Exception("Boom!");
-        return string.Format("Task {0} is running on a thread id {1}. Is thread pool thread: {2}",
-            name, Thread.CurrentThread.ManagedThreadId, Thread.CurrentThread.IsThreadPoolThread);
+        Console.WriteLine("Total count is " + count);
     }
 }
