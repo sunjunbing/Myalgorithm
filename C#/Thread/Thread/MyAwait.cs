@@ -9,7 +9,8 @@ class MyAwait
 {
     public static void test()
     {
-        callMethod();
+        //callMethod();
+        TaskSortTest();
         Console.ReadKey();
     }
 
@@ -48,5 +49,31 @@ class MyAwait
     public static void Method3(int count)
     {
         Console.WriteLine("Total count is " + count);
+    }
+
+    static void TaskSortTest()
+    {
+        var parent = new Task(ParenetTask);
+        parent.Start();
+        Thread.Sleep(2000);
+        Console.WriteLine(parent.Status);
+        Thread.Sleep(4000);
+        Console.WriteLine(parent.Status);
+    }
+
+    static void ParenetTask()
+    {
+        Console.WriteLine("taskID" + Task.CurrentId);
+        var child = new Task(ChildTask);
+        child.Start();
+        Thread.Sleep(2000);
+        Console.WriteLine("start child, parent finished");
+    }
+
+    static void ChildTask()
+    {
+        Console.WriteLine("child start");
+        Thread.Sleep(5000);
+        Console.WriteLine("child finished");
     }
 }
