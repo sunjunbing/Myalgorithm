@@ -72,3 +72,36 @@ void reverseStr(char[] chars, int li, int ri)
         li++;ri--; 
     }
 }
+
+int lengthOfLongestNoRepeatSubString(string str)
+{
+    if (str == null) return 0;
+    char[] chars = str.ToCharArray();
+    if (chars.Length == 0) return 0;
+    Dictionary<char, Integer> dict = new Dictionary<char, Integer>();
+    dict.Add(chars[0], new Integer(0));
+
+    int max = 1;
+    int li = 0;
+    for (int i = 1; i < chars.Length; i++)
+    {
+        dict.TryGetValue(chars[i], out Integer pi);
+        if(pi != null && li < pi.index)
+        {
+            li = pi.index + 1;
+        }
+        dict.Add(chars[i], new Integer(i));
+        max = Math.Max(max, i - li + 1);
+    }
+    return max;
+}
+
+class Integer
+{
+    public int index;
+    public Integer(int i)
+    {
+        index = i;
+    }
+};
+
