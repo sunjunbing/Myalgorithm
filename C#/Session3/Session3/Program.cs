@@ -96,6 +96,34 @@ int lengthOfLongestNoRepeatSubString(string str)
     return max;
 }
 
+int lengthOfLongestNoRepeatSubString2(string str)
+{
+    if (str == null) return 0;
+    char[] chars = str.ToCharArray();
+    if (chars.Length == 0) return 0;
+    int[] indexs = new int[128];
+    for(int i= 0; i < indexs.Length; i++)
+    {
+        indexs[i] = -1;
+    }
+    indexs[chars[0]] = 0; 
+
+    int max = 1;
+    int li = 0;
+    for (int i = 1; i < chars.Length; i++)
+    {
+        int pi = indexs[chars[i]];
+        if (li < pi)
+        {
+            li = pi + 1;
+        }
+        indexs[chars[i]] = i;
+        max = Math.Max(max, i - li + 1);
+    }
+    return max;
+}
+
+
 class Integer
 {
     public int index;
@@ -104,4 +132,6 @@ class Integer
         index = i;
     }
 };
+
+
 
