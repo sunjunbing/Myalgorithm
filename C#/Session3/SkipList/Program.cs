@@ -1,8 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.Runtime.InteropServices;
-
+﻿
 Console.WriteLine("Hello, World!");
 convertStrTest();
+maxValueTest();
 
 void convertStrTest()
 {
@@ -13,16 +12,17 @@ void convertStrTest()
 }
 
 
+
 //字符串消除空格
 string convertStr(string str)
 {
-    if(str == null || str.Length == 0)
+    if (str == null || str.Length == 0)
     {
         Console.WriteLine("input str is empty");
         return "";
     }
     char[] chars = str.ToCharArray();
-    if(chars.Length == 0)
+    if (chars.Length == 0)
     {
         Console.WriteLine("chars count is 0");
         return "";
@@ -30,14 +30,14 @@ string convertStr(string str)
     int cur = 0;
     int len = 0;
     bool space = true;
-    for(int i = 0; i < chars.Length; i++)
+    for (int i = 0; i < chars.Length; i++)
     {
         if (chars[i] != ' ')//当前字符不是空字符
         {
             chars[cur++] = chars[i];
             space = false;
         }
-        else if(space == false)//当前字符是空字符，并且上一个字符不是空字符
+        else if (space == false)//当前字符是空字符，并且上一个字符不是空字符
         {
             chars[cur++] = ' ';
             space = true;
@@ -48,12 +48,12 @@ string convertStr(string str)
     reverseStr(chars, 0, len);
 
     int begin = 0;
-    for(int i = 0; i < len; i++) 
+    for (int i = 0; i < len; i++)
     {
         if (chars[i] == ' ')
         {
             reverseStr(chars, begin, i);
-            begin = i+1;
+            begin = i + 1;
         }
     }
     reverseStr(chars, begin, len);
@@ -64,12 +64,12 @@ string convertStr(string str)
 void reverseStr(char[] chars, int li, int ri)
 {
     ri--;
-    while(li < ri)
+    while (li < ri)
     {
         char temp = chars[li];
         chars[li] = chars[ri];
         chars[ri] = temp;
-        li++;ri--; 
+        li++; ri--;
     }
 }
 
@@ -86,7 +86,7 @@ int lengthOfLongestNoRepeatSubString(string str)
     for (int i = 1; i < chars.Length; i++)
     {
         dict.TryGetValue(chars[i], out Integer pi);
-        if(pi != null && li < pi.index)
+        if (pi != null && li < pi.index)
         {
             li = pi.index + 1;
         }
@@ -102,11 +102,11 @@ int lengthOfLongestNoRepeatSubString2(string str)
     char[] chars = str.ToCharArray();
     if (chars.Length == 0) return 0;
     int[] indexs = new int[128];
-    for(int i= 0; i < indexs.Length; i++)
+    for (int i = 0; i < indexs.Length; i++)
     {
         indexs[i] = -1;
     }
-    indexs[chars[0]] = 0; 
+    indexs[chars[0]] = 0;
 
     int max = 1;
     int li = 0;
@@ -124,6 +124,47 @@ int lengthOfLongestNoRepeatSubString2(string str)
 }
 
 
+void maxValueTest()
+{
+    int[][] grid = new int[3][];
+    grid[0] = new int[] { 1, 3, 1 };
+    grid[1] = new int[] { 1, 5, 1 };
+    grid[2] = new int[] { 4, 2, 1 };
+    Console.WriteLine(maxValue(grid));
+}
+
+//礼物的最大值
+int maxValue(int[][] grid)
+{
+    if (grid == null) return 0;
+    int rows = grid.GetLength(0);
+    int cols = grid[0].GetLength(0);
+
+    int[,] dp = new int[rows, cols];
+    dp[0, 0] = grid[0][0];
+    //第0行
+    for (int row = 1; row < rows; row++)
+    {
+        dp[row, 0] = dp[row - 1, 0] + grid[row][0];
+    }
+    //第0列
+    for (int col = 1; col < cols; col++)
+    {
+        dp[0, col] = dp[0, col - 1] + grid[0][col];
+    }
+
+    for (int row = 1; row < rows; row++)
+    {
+        for (int col = 1; col < cols; col++)
+        {
+            dp[row, col] = Math.Max(dp[row - 1, col], dp[row, col - 1]) + grid[row][col];
+        }
+    }
+    return dp[rows - 1, cols - 1];
+}
+
+
+
 class Integer
 {
     public int index;
@@ -132,6 +173,3 @@ class Integer
         index = i;
     }
 };
-
-
-

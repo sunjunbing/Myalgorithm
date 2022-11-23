@@ -11,3 +11,17 @@ D:\学习资料\李明杰\算法练习\QuickSort\QuickSort\bin\Debug\netcoreapp3
 D:\学习资料\李明杰\算法练习\QuickSort\QuickSort\obj\Debug\netcoreapp3.1\QuickSort.dll
 D:\学习资料\李明杰\算法练习\QuickSort\QuickSort\obj\Debug\netcoreapp3.1\QuickSort.pdb
 D:\学习资料\李明杰\算法练习\QuickSort\QuickSort\obj\Debug\netcoreapp3.1\QuickSort.genruntimeconfig.cache
+D:\sunjian@sensetime.com\数据结构算法\Myalgorithm\C#\QuickSort\QuickSort\bin\Debug\netcoreapp3.1\QuickSort.exe
+D:\sunjian@sensetime.com\数据结构算法\Myalgorithm\C#\QuickSort\QuickSort\bin\Debug\netcoreapp3.1\QuickSort.deps.json
+D:\sunjian@sensetime.com\数据结构算法\Myalgorithm\C#\QuickSort\QuickSort\bin\Debug\netcoreapp3.1\QuickSort.runtimeconfig.json
+D:\sunjian@sensetime.com\数据结构算法\Myalgorithm\C#\QuickSort\QuickSort\bin\Debug\netcoreapp3.1\QuickSort.runtimeconfig.dev.json
+D:\sunjian@sensetime.com\数据结构算法\Myalgorithm\C#\QuickSort\QuickSort\bin\Debug\netcoreapp3.1\QuickSort.dll
+D:\sunjian@sensetime.com\数据结构算法\Myalgorithm\C#\QuickSort\QuickSort\bin\Debug\netcoreapp3.1\QuickSort.pdb
+D:\sunjian@sensetime.com\数据结构算法\Myalgorithm\C#\QuickSort\QuickSort\obj\Debug\netcoreapp3.1\QuickSort.csproj.AssemblyReference.cache
+D:\sunjian@sensetime.com\数据结构算法\Myalgorithm\C#\QuickSort\QuickSort\obj\Debug\netcoreapp3.1\QuickSort.GeneratedMSBuildEditorConfig.editorconfig
+D:\sunjian@sensetime.com\数据结构算法\Myalgorithm\C#\QuickSort\QuickSort\obj\Debug\netcoreapp3.1\QuickSort.AssemblyInfoInputs.cache
+D:\sunjian@sensetime.com\数据结构算法\Myalgorithm\C#\QuickSort\QuickSort\obj\Debug\netcoreapp3.1\QuickSort.AssemblyInfo.cs
+D:\sunjian@sensetime.com\数据结构算法\Myalgorithm\C#\QuickSort\QuickSort\obj\Debug\netcoreapp3.1\QuickSort.csproj.CoreCompileInputs.cache
+D:\sunjian@sensetime.com\数据结构算法\Myalgorithm\C#\QuickSort\QuickSort\obj\Debug\netcoreapp3.1\QuickSort.dll
+D:\sunjian@sensetime.com\数据结构算法\Myalgorithm\C#\QuickSort\QuickSort\obj\Debug\netcoreapp3.1\QuickSort.pdb
+D:\sunjian@sensetime.com\数据结构算法\Myalgorithm\C#\QuickSort\QuickSort\obj\Debug\netcoreapp3.1\QuickSort.genruntimeconfig.cache
