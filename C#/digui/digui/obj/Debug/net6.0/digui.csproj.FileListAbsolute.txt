@@ -1,0 +1,15 @@
+/Users/sunjian/Desktop/Myalgorithm/C#/digui/digui/bin/Debug/net6.0/digui
+/Users/sunjian/Desktop/Myalgorithm/C#/digui/digui/bin/Debug/net6.0/digui.deps.json
+/Users/sunjian/Desktop/Myalgorithm/C#/digui/digui/bin/Debug/net6.0/digui.runtimeconfig.json
+/Users/sunjian/Desktop/Myalgorithm/C#/digui/digui/bin/Debug/net6.0/digui.dll
+/Users/sunjian/Desktop/Myalgorithm/C#/digui/digui/bin/Debug/net6.0/digui.pdb
+/Users/sunjian/Desktop/Myalgorithm/C#/digui/digui/obj/Debug/net6.0/digui.csproj.AssemblyReference.cache
+/Users/sunjian/Desktop/Myalgorithm/C#/digui/digui/obj/Debug/net6.0/digui.GeneratedMSBuildEditorConfig.editorconfig
+/Users/sunjian/Desktop/Myalgorithm/C#/digui/digui/obj/Debug/net6.0/digui.AssemblyInfoInputs.cache
+/Users/sunjian/Desktop/Myalgorithm/C#/digui/digui/obj/Debug/net6.0/digui.AssemblyInfo.cs
+/Users/sunjian/Desktop/Myalgorithm/C#/digui/digui/obj/Debug/net6.0/digui.csproj.CoreCompileInputs.cache
+/Users/sunjian/Desktop/Myalgorithm/C#/digui/digui/obj/Debug/net6.0/digui.dll
+/Users/sunjian/Desktop/Myalgorithm/C#/digui/digui/obj/Debug/net6.0/refint/digui.dll
+/Users/sunjian/Desktop/Myalgorithm/C#/digui/digui/obj/Debug/net6.0/digui.pdb
+/Users/sunjian/Desktop/Myalgorithm/C#/digui/digui/obj/Debug/net6.0/digui.genruntimeconfig.cache
+/Users/sunjian/Desktop/Myalgorithm/C#/digui/digui/obj/Debug/net6.0/ref/digui.dll

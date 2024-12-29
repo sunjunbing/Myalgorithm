@@ -1,13 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "d50bo91B4Lm1WNYWSRdQ+r7IQ93wWFOq7sro+PaCtH00NG8ZKtpbcJTJLrt2Xeiz1Iv+ikMDpAqozl5Cp+rp/Q==",
+  "dgSpecHash": "sodY4q0It4ODEKjKtRPrYrQmrFhJqqOMIEoKuYyPlOP/RRvxgv104vVfv8tPb6B5ln3hfaZ3pTviotHuCk8AyA==",
   "success": true,
-  "projectFilePath": "D:\\sunjian@sensetime.com\\数据结构算法\\Myalgorithm\\C#\\QuickSort\\QuickSort\\QuickSort.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\sunjian\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.30\\microsoft.netcore.app.host.win-x64.3.1.30.nupkg.sha512",
-    "C:\\Users\\sunjian\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.1.10\\microsoft.aspnetcore.app.ref.3.1.10.nupkg.sha512",
-    "C:\\Users\\sunjian\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\3.1.0\\microsoft.windowsdesktop.app.ref.3.1.0.nupkg.sha512",
-    "C:\\Users\\sunjian\\.nuget\\packages\\microsoft.netcore.app.ref\\3.1.0\\microsoft.netcore.app.ref.3.1.0.nupkg.sha512"
-  ],
+  "projectFilePath": "D:\\学习资料\\李明杰\\数据结构算法\\练习\\QuickSort\\QuickSort\\QuickSort.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }
