@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include <stack>
 #include <numeric>
+#include <sstream>
 
 using namespace std;
 
@@ -1252,6 +1253,110 @@ void test27(){
     cout << minDistance("horse", "ros") << endl;
 }
 
+/*
+ 28. 岛屿数量
+ 给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
+ 岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
+ 此外，你可以假设该网格的四条边均被水包围。
+ 解法：递归
+ */
+void numIslands(vector<vector<char>>& grid, int row, int col){
+    if(row < 0 || row >= grid.size() || col < 0 || col >= grid[0].size() || grid[row][col] == '0'){
+        return;
+    }
+    grid[row][col] = '0';
+    vector<pair<int, int>> dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    for(auto dir : dirs){
+        numIslands(grid, row+dir.first, col+dir.second);
+    }
+}
+int numIslands(vector<vector<char>>& grid) {
+    int len = (int)grid.size();
+    if (len <= 0) return 0;
+    int ret = 0;
+    int rows = len, cols = (int)grid[0].size();
+    for(int row = 0; row < rows; row++){
+        for(int col = 0; col < cols; col++){
+            if (grid[row][col] == '1') {
+                ret++;
+                numIslands(grid, row, col);
+            }
+        }
+    }
+    return ret;
+}
+void test28(){
+    cout << "---------test28-----------" << endl;
+    vector<vector<char>> grid = {{'1','1','1','1','0'},
+                                {'1','1','0','1','0'},
+                                {'1','1','0','0','0'},
+                                {'0','0','0','0','0'}};
+    grid = { {'1','1','0','0','0'},
+                {'1','1','0','0','0'},
+                {'0','0','1','0','0'},
+                {'0','0','0','1','1'}};
+    cout << numIslands(grid) << endl;
+}
+
+/*
+ 29. 复原 IP 地址
+ 有效 IP 地址 正好由四个整数（每个整数位于 0 到 255 之间组成，且不能含有前导 0），整数之间用 '.' 分隔。
+ 例如："0.1.2.201" 和 "192.168.1.1" 是 有效 IP 地址，但是 "0.011.255.245"、"192.168.1.312" 和 "192.168@1.1" 是 无效 IP 地址。
+ 给定一个只包含数字的字符串 s ，用以表示一个 IP 地址，返回所有可能的有效 IP 地址，这些地址可以通过在 s 中插入 '.' 来形成。你 不能 重新排序或删除 s 中的任何数字。你可以按 任何 顺序返回答案。
+ 解法：回溯
+ */
+vector<string> split(string str, char ch){
+    vector<string> tokens;
+    string token;
+    istringstream iss(str);
+    while (getline(iss, token, ch)) {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
+bool isIpValid(string part){
+    int len = (int)part.length();
+    if(len <= 0 || len > 3) return false;
+    if(len > 1 && part[0] == '0') return false;
+    int val = stoi(part);
+    return val >= 0 && val <= 255;
+}
+void restoreIpAddress(string& s, int start, string current, vector<string>& ret){
+    if (start == s.length()) {
+        if (split(current, '.').size() == 4) {
+            ret.push_back(current);
+        }
+        return;
+    }
+    for(int len = 1; len <= 3; len++){
+        if (start + len > s.length()) break;
+        
+        string part = s.substr(start, len);
+        
+        if (isIpValid(part)) {
+            if (current.length() > 0) {
+                part = "." + part;
+            }
+            restoreIpAddress(s, start+len, current+part, ret);
+        }
+    }
+}
+
+vector<string> restoreIpAddresses(string s) {
+    if (s.length() < 4 || s.length() > 12) return {};
+    vector<string> ret = {};
+    restoreIpAddress(s, 0, "", ret);
+    return ret;
+}
+void test29(){
+    cout << "---------test29-----------" << endl;
+    string ipStr = "25525511135";
+//    ipStr = "0000";
+    auto ret = restoreIpAddresses(ipStr);
+    for_each(ret.begin(), ret.end(), Display<string>());
+    cout << endl;
+}
 
 /*
  30. 爬楼梯
@@ -1271,6 +1376,55 @@ int climbStairs(int n) {
 void test30(){
     cout << "---------test30-----------" << endl;
     cout << climbStairs(3) << endl;
+}
+
+/*
+ 10. 正则表达式匹配
+ 给你一个字符串 s 和一个字符规律 p，请你来实现一个支持 '.' 和 '*' 的正则表达式匹配。
+ '.' 匹配任意单个字符
+ '*' 匹配零个或多个前面的那一个元素
+ 所谓匹配，是要涵盖 整个 字符串 s 的，而不是部分字符串。
+ 解法：动态规划
+ dp[i][j]表示字符串s[0, i-1]是否匹配p[0, j-1]
+ if(s[i - 1] = p[j - 1] || p[j - 1] == '.') dp[i][j] = dp[i-1][j-1]
+ "a*" "a*"
+ */
+bool isMatch(string s, string p) {
+    int m = (int)s.length(), n = (int)p.length();
+    vector<vector<bool>> dp(m + 1, vector<bool>(n + 1, false));
+    
+    // 空字符串和空模式是匹配的
+    dp[0][0] = true;
+    
+    // 处理模式p的前缀含有 '*' 的情况
+    for (int j = 1; j <= n; j++) {
+        if (p[j - 1] == '*') {
+            dp[0][j] = dp[0][j - 2]; // '*' 代表匹配零个字符
+        }
+    }
+    
+    // 填充dp表格
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (p[j - 1] == s[i - 1] || p[j - 1] == '.') {
+                dp[i][j] = dp[i - 1][j - 1]; // 字符匹配
+            } else if (p[j - 1] == '*') {
+                dp[i][j] = dp[i][j - 2] || (dp[i - 1][j] && (s[i - 1] == p[j - 2] || p[j - 2] == '.'));
+                // 1. * 表示不匹配字符
+                // 2. * 表示匹配一个或多个前一个字符
+            }
+        }
+    }
+    
+    return dp[m][n];
+}
+void test31(){
+    cout << "---------test31-----------" << endl;
+    string s = "aa", p = "a";
+    s = "aa"; p = "a*";
+    s = "ab"; p = ".*";
+    s = "aab"; p = "c*a*b";
+    cout << isMatch(s, p) << endl;
 }
 
 /*
@@ -1459,6 +1613,27 @@ void test35(){
         for_each(vec.begin(), vec.end(), Display<int>());
         cout << endl;
     }
+}
+
+/*
+ 36. 对称二叉树
+ 给你一个二叉树的根节点 root ， 检查它是否轴对称。
+ 解法：递归
+ */
+bool isSymmetric(TreeNode* root, int hehe){
+    
+}
+bool isSymmetric(TreeNode* root) {
+    if(!root) return true;
+    
+}
+void test36(){
+    TreeNode *root = new TreeNode(1);
+    TreeNode *left = new TreeNode(2);
+    TreeNode *right = new TreeNode(3);
+    root->left = left;
+    root->right = right;
+    cout << isSymmetric(root) << endl;
 }
 
 /*
@@ -1849,7 +2024,10 @@ int main(int argc, const char * argv[]) {
     test25();
     test26();
     test27();
+    test28();
+    test29();
     test30();
+    test31();
     test32();
     test33();
     test34();
