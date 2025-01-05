@@ -719,6 +719,36 @@ void test14(){
     cout << maxProfit(prices) << endl;
 }
 
+
+/*
+ 50. 买卖股票的最佳时机 II
+ 给你一个整数数组 prices ，其中 prices[i] 表示某支股票第 i 天的价格。
+ 在每一天，你可以决定是否购买和/或出售股票。你在任何时候 最多 只能持有 一股 股票。
+ 你也可以先购买，然后在 同一天 出售。
+ 返回 你能获得的 最大 利润 。
+ 解法一：动态规划，现在要记的是状态
+ dp[i][0] : 表示第i天，手里没有股票，
+ 1.前一天没有股票  dp[i-1][0]
+ 2.今天卖出股票    dp[i-1][1] + prices[i]
+ dp[i][1]: 表示第i天，手里有股票
+ 1.前一天有股票 dp[i-1][1]
+ 2.今天卖入股票 dp[i-1][0] - prices[i]
+ */
+int maxProfit2(vector<int>& prices) {
+    int len = (int)prices.size();
+    if(len == 0) return 0;
+    vector<vector<int>> dp(len, vector<int>(2, 0));
+    dp[0][0] = 0; dp[0][1] = -prices[0];
+    for(int i = 1; i < len; i++){
+        dp[i][0] = max(dp[i-1][0], dp[i-1][1] + prices[i]);
+        dp[i][1] = max(dp[i-1][1], dp[i-1][0] - prices[i]);
+    }
+    return dp[len-1][0];
+}
+void test50(){
+    cout << "-------------test50-----------" << endl;
+}
+
 /*
  15. 分发糖果
  n 个孩子站成一排。给你一个整数数组 ratings 表示每个孩子的评分。
@@ -1620,21 +1650,189 @@ void test35(){
  给你一个二叉树的根节点 root ， 检查它是否轴对称。
  解法：递归
  */
-bool isSymmetric(TreeNode* root, int hehe){
-    
+bool isSymmetric(TreeNode* left, TreeNode* right){
+    int ret = true;
+    if((left == nullptr && right == nullptr)) return true;
+    if ((left == nullptr && right != nullptr) ||
+        (right == nullptr && left != nullptr)) return false;
+    ret &= isSymmetric(left->left, right->right);
+    ret &= isSymmetric(left->right, right->left);
+    ret &= left->val == right->val;
+    return ret;
 }
 bool isSymmetric(TreeNode* root) {
-    if(!root) return true;
-    
+    return isSymmetric(root->left, root->right);
 }
 void test36(){
+    cout << "---------test35-----------" << endl;
+    TreeNode *root = new TreeNode(1);
+    TreeNode *left = new TreeNode(2);
+    TreeNode *right = new TreeNode(2);
+    root->left = left;
+    root->right = right;
+    
+    
+    TreeNode *left1 = new TreeNode(2);
+    TreeNode *right1 = new TreeNode(2);
+    left->left = left1;
+    right->right = right1;
+    
+    cout << isSymmetric(root) << endl;
+}
+
+/*
+ 37. 二叉树的右视图
+ 给定一个二叉树的 根节点 root，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+ */
+vector<int> rightSideView(TreeNode* root) {
+    if(!root) return {};
+    vector<int> ret = {};
+    queue<TreeNode *> q = {};
+    q.push(root);
+    while (!q.empty()) {
+        int size = (int)q.size();
+        auto node = q.front();
+        for(int i = 0; i < size; i++){
+            if (i == size-1) {
+                ret.push_back(q.front()->val);
+            }
+            node = q.front();
+            q.pop();
+            if(node->left) q.push(node->left);
+            if(node->right) q.push(node->right);
+        }
+    }
+    return ret;
+}
+void test37(){
+    cout << "---------test37-----------" << endl;
     TreeNode *root = new TreeNode(1);
     TreeNode *left = new TreeNode(2);
     TreeNode *right = new TreeNode(3);
     root->left = left;
     root->right = right;
-    cout << isSymmetric(root) << endl;
+    
+    
+    TreeNode *left1 = new TreeNode(4);
+    TreeNode *right1 = new TreeNode(5);
+    left->left = left1;
+    right->right = right1;
+    
+    auto ret = rightSideView(root);
+    for_each(ret.begin(), ret.end(), Display<int>());
+    cout << endl;
 }
+
+/*
+ 38. 零钱兑换
+ 给你一个整数数组 coins ，表示不同面额的硬币；以及一个整数 amount ，表示总金额。
+ 计算并返回可以凑成总金额所需的 最少的硬币个数 。如果没有任何一种硬币组合能组成总金额，返回 -1 。
+ 你可以认为每种硬币的数量是无限的。
+ 解法一：贪心算法
+ 解法二：动态规划 dp[amount] = dp[amount-coins[i]]] + 1;
+ */
+int coinChange(vector<int>& coins, int amount) {
+    if (amount == 0) return 0;
+    vector<int> dp(amount+1, amount+1);
+    dp[0] = 0;
+    for(int i = 1; i < amount+1; i++){
+        for(auto coin : coins){
+            dp[i] = min(dp[i], dp[i-coin] + 1);
+        }
+    }
+    
+    return  dp[amount] > amount ? -1 : dp[amount];
+}
+void test38(){
+    cout << "-------------test38-----------" << endl;
+    vector<int> coins{2}; int target = 3;
+    coins = {1,2,5}; target = 11;
+    coins = {186,419,83,408}; target = 6249;
+    cout << coinChange(coins, target) << endl;
+}
+
+/*
+ 54. 螺旋矩阵
+ 给你一个 m 行 n 列的矩阵 matrix ，请按照 顺时针螺旋顺序 ，返回矩阵中的所有元素。
+ */
+vector<int> spiralOrder(vector<vector<int>>& matrix) {
+    vector<int> ret = {};
+    if(matrix.size() == 0) return ret;
+    vector<pair<int, int>> dirs{{-1,0},{1,0},{0,-1},{0,1}};
+    int row = 0, rows = (int)matrix.size() - 1, col = 0, cols = (int)matrix[0].size() - 1;
+    
+    while (row <= rows && col <= cols) {
+        //从左向右
+        for (int i = col; i <= cols; i++) {
+            ret.push_back(matrix[row][i]);
+        }
+        row++;
+        //从上到下
+        for (int i = row; i <= rows; i++) {
+            ret.push_back(matrix[i][cols]);
+        }
+        cols--;
+        //从右到左
+        for (int i = cols; i >= col && row <= rows; i--) {
+            ret.push_back(matrix[rows][i]);
+        }
+        rows--;
+        //从下到上
+        for (int i = rows; i >= row && col <= cols; i--) {
+            ret.push_back(matrix[i][col]);
+        }
+        col++;
+    }
+
+    
+    return ret;
+}
+void test39(){
+    cout << "-------------test39-----------" << endl;
+    vector<vector<int>> coins= {
+        {1,2,3,10},
+        {4,5,6,11},
+        {7,8,9,12}
+    };
+//    coins= {
+//        {2,3},
+//    };
+    auto ret = spiralOrder(coins);
+    for_each(ret.begin(), ret.end(), Display<int>());
+    cout << endl;
+}
+
+/*
+ 41. 括号生成
+ 数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+ */
+void generateParenthesis(vector<string>& ret, string cur, int open, int close, int n) {
+    if(cur.length() == n * 2){
+        ret.push_back(cur);
+        return;
+    }
+    
+    if(open < n){
+        generateParenthesis(ret, cur + "(", open+1, close, n);
+    }
+    if (close < open) {
+        generateParenthesis(ret, cur + ")", open, close+1, n);
+    }
+    
+}
+vector<string> generateParenthesis(int n) {
+    if(n == 0) return {};
+    vector<string> ret = {};
+    generateParenthesis(ret, "", 0, 0, n);
+    return ret;
+}
+void test41(){
+    cout << "-------------test41-----------" << endl;
+    auto ret = generateParenthesis(3);
+    for_each(ret.begin(), ret.end(), Display<string>());
+    cout << endl;
+}
+
 
 /*
  88. 合并两个有序数组
@@ -1771,6 +1969,35 @@ void test44(){
 }
 
 /*
+ 45. 二叉树的最大深度
+ 给定一个二叉树 root ，返回其最大深度。
+ 二叉树的 最大深度 是指从根节点到最远叶子节点的最长路径上的节点数。
+ */
+int maxDepth(TreeNode* root) {
+    if(root == nullptr) return 0;
+    int Max = 0;
+    Max = max(maxDepth(root->left), maxDepth(root->right));
+    return Max + 1;
+}
+void test45(){
+    cout << "---------test45-----------" << endl;
+    TreeNode *root = new TreeNode(1);
+    TreeNode *left = new TreeNode(2);
+    TreeNode *right = new TreeNode(3);
+    root->left = left;
+    root->right = right;
+    
+    
+    TreeNode *left1 = new TreeNode(4);
+    TreeNode *right1 = new TreeNode(5);
+    left->left = left1;
+    left1->right = right1;
+    
+    auto ret = maxDepth(root);
+    cout << ret << endl;
+}
+
+/*
  48. 两两交换链表中的节点
  给你一个链表，两两交换其中相邻的节点，并返回交换后链表的头节点。
  你必须在不修改节点内部的值的情况下完成本题（即，只能进行节点交换）。
@@ -1834,6 +2061,56 @@ void test48(){
     ListNode::display(head);
     cout << endl;
 }
+
+/*
+ 49. 单词搜索
+ 给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。如果 word 存在于网格中，返回 true ；否则，返回 false 。
+ 单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+ */
+bool backtrack(vector<vector<char>>& board, string word, int index, int i, int j) {
+    // 如果所有字符都匹配
+    if (index == word.length()) {
+        return true;
+    }
+    
+    // 检查边界条件
+    if (i < 0 || i >= board.size() || j < 0 || j >= board[0].size() ||
+        board[i][j] != word[index]) {
+        return false;
+    }
+    
+    // 临时保存当前字符
+    char temp = board[i][j];
+    board[i][j] = '#';  // 标记为已访问
+    
+    // 四个方向搜索
+    bool found = backtrack(board, word, index + 1, i + 1, j) ||
+                 backtrack(board, word, index + 1, i - 1, j) ||
+                 backtrack(board, word, index + 1, i, j + 1) ||
+                 backtrack(board, word, index + 1, i, j - 1);
+    
+    // 恢复当前字符
+    board[i][j] = temp;
+    
+    return found;
+}
+
+// 单词搜索函数
+bool exist(vector<vector<char>>& board, string word) {
+    // 遍历整个网格
+    for (int i = 0; i < board.size(); i++) {
+        for (int j = 0; j < board[0].size(); j++) {
+            if (backtrack(board, word, 0, i, j)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+void test49(){
+    cout << "-------------test49-----------" << endl;
+}
+
 
 /*
  51. 排序链表
@@ -1902,6 +2179,55 @@ void test51(){
     auto ret = sortList(head1);
     ListNode::display(ret);
     cout << endl;
+}
+
+/*
+ 53.二叉树的最近公共祖先
+ */
+void dfs(TreeNode* root, unordered_map<TreeNode *, TreeNode *>& map){
+    if(!root) return;
+    if (root->left) {
+        map[root->left] = root;
+        dfs(root->left, map);
+    }
+    if (root->right) {
+        map[root->right] = root;
+        dfs(root->right, map);
+    }
+}
+TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+    if(!root) return root;
+    unordered_map<TreeNode *, TreeNode *> parents_map;
+    parents_map[root] = nullptr;
+    unordered_set<TreeNode *> parents;
+    dfs(root, parents_map);
+    while (p) {
+        parents.insert(p);
+        p = parents_map[p];
+    }
+    while (q) {
+        if (parents.find(q) != parents.end()) {
+            return q;
+        }
+        q = parents_map[q];
+    }
+    return nullptr;
+}
+void test53(){
+    TreeNode *root = new TreeNode(1);
+    TreeNode *left = new TreeNode(2);
+    TreeNode *right = new TreeNode(3);
+    root->left = left;
+    root->right = right;
+    
+    
+    TreeNode *left1 = new TreeNode(4);
+    TreeNode *right1 = new TreeNode(5);
+    left->left = left1;
+    left1->right = right1;
+    
+    auto node = lowestCommonAncestor(root, left, left1);
+//    cout << node->val << endl;
 }
 
 
@@ -2032,11 +2358,19 @@ int main(int argc, const char * argv[]) {
     test33();
     test34();
     test35();
+    test36();
+    test37();
+    test38();
+    test39();
+    test41();
     test42();
     test43();
     test44();
+    test45();
     test48();
+    test49();
     test51();
+    test53();
     test55();
     test56();
     return 0;
