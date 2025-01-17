@@ -2163,6 +2163,48 @@ ListNode* sortList(ListNode* head) {
     return head;
 }
 
+class Solution{
+public:
+    ListNode *findMiddle(ListNode *head){
+        if(!head) return head;
+        auto slow = head, fast = head->next;
+        while(fast && fast->next){
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        return slow;
+    }
+    ListNode *merge(ListNode *l, ListNode *r){
+        if(!l || !r) return l ? l : r;
+        ListNode *dummy = new ListNode(-1);
+        ListNode *cur = dummy;
+        while (l && r) {
+            if (l->val < r->val) {
+                cur->next = l; l = l->next;
+            }else{
+                cur->next = r; r = r->next;
+            }
+            cur = cur->next;
+        }
+        if(l) cur->next = l;
+        if(r) cur->next = r;
+        return dummy->next;
+    }
+    ListNode *mergeSort(ListNode *head){
+        if(!head || !head->next) return head;
+        auto middle = findMiddle(head);
+        auto left = head;
+        auto right = middle->next;
+        middle->next = nullptr;
+        return merge(mergeSort(left), mergeSort(right));
+    }
+
+    ListNode* sortList(ListNode *head){
+        if(head == nullptr) return head;
+        return mergeSort(head);
+    }
+};
+
 void test51(){
     cout << "-------------test51-----------" << endl;
     ListNode *head1 = new ListNode(1);
@@ -2176,7 +2218,9 @@ void test51(){
     node1_2->next = node1_3;
     node1_3->next = node1_4;
     node1_4->next = node1_5;
-    auto ret = sortList(head1);
+//    auto ret = sortList(head1);
+    auto solution = Solution();
+    auto ret = solution.sortList(head1);
     ListNode::display(ret);
     cout << endl;
 }
@@ -2320,6 +2364,10 @@ void test56(){
     cout << endl;
     
 }
+
+/*
+ 中位数
+ */
 
 
 int main(int argc, const char * argv[]) {
