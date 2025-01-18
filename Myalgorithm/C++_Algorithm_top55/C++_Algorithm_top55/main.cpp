@@ -280,16 +280,15 @@ double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
     total.insert(total.end(), nums2.begin(), nums2.end());
     int l2 = (int)total.size();
     int l = 0, r = (int)nums1.size(), t = 0;
-    while (l < l1 || r < l2) {
-        if (r < l2) {
-            if (nums1[l] < total[r]) {
-                total[t++] = nums1[l++];
-            }else{
-                total[t++] = total[r++];
-            }
-        }else if(l < l1){
+    while (l < l1 && r < l2) {
+        if (nums1[l] < total[r]) {
             total[t++] = nums1[l++];
+        }else{
+            total[t++] = total[r++];
         }
+    }
+    while(l < l1){
+        total[t++] = nums1[l++];
     }
     return findMedianSortedArrays(total);
 }
@@ -2364,10 +2363,6 @@ void test56(){
     cout << endl;
     
 }
-
-/*
- 中位数
- */
 
 
 int main(int argc, const char * argv[]) {
